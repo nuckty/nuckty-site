@@ -1,0 +1,17 @@
+node_modules/
+site/
+.build/
+content/docs/
+content/downloads/
+config/ru/sitemap.yml
+config/en/sitemap.yml
+blocks/search/search-data.js
+content/search-data.json
+*.log
+.DS_Store
+
+.cache/
+.preview/
+
+__pycache__/
+*.pyc

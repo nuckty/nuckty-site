@@ -1,0 +1,4 @@
+.card { border: 1px solid #d4d8c5; background: #fbfcf4; padding: 20px 24px; }
+.card__title { margin: 0 0 10px; font-size: var(--text-subtitle); letter-spacing: -1px; }
+.card__description { margin: 0; font-size: var(--text-small); color: #81866f; }
+

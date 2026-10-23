@@ -1,0 +1,8 @@
+{
+    "baseUrl": "https://nuckty.com",
+    "rootTitle": "nuckty",
+    "bundles": [
+        "page"
+    ],
+    "logPrefix": "nuckty-site"
+}

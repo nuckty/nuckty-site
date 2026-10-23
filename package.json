@@ -1,0 +1,48 @@
+{
+    "name": "nuckty-site",
+    "version": "1.0.0-beta1",
+    "private": true,
+    "type": "module",
+    "license": "MIT",
+    "description": "Nuckty product website and bilingual documentation, built with nuckty.",
+    "scripts": {
+        "prepare:content": "node scripts/prepare-content.mjs",
+        "prepare:starter": "node scripts/prepare-starter.mjs",
+        "build": "npm run prepare:content && npm run prepare:starter && nuckty build",
+        "serve": "nuckty serve ru --port 8091",
+        "serve:en": "node scripts/serve-en.mjs",
+        "stop:en": "node scripts/serve-en.mjs --stop",
+        "stop": "nuckty stop",
+        "validate": "npm run validate:ru && npm run validate:en",
+        "validate:ru": "nuckty validate ru",
+        "validate:en": "nuckty validate en",
+        "lint": "tsc --noEmit -p config/config-ts.json",
+        "test": "node --test test/*.test.mjs",
+        "test:starter": "node scripts/test-starter.mjs",
+        "build:preview": "NUCKTY_PREVIEW=1 npm run build"
+    },
+    "dependencies": {
+        "@orama/orama": "3.1.18",
+        "@orama/stemmers": "3.1.18",
+        "nuckty": "file:../nuckty",
+        "nuckty-ext-block-root": "file:../nuckty-ext-block-root",
+        "nuckty-ext-command-serve": "file:../nuckty-ext-command-serve",
+        "nuckty-ext-command-validate-vnu": "file:../nuckty-ext-command-validate-vnu",
+        "nuckty-ext-markdown-typography-ru": "file:../nuckty-ext-markdown-typography-ru"
+    },
+    "devDependencies": {
+        "@tanstack/highlight": "0.1.0",
+        "@types/node": "24.13.3",
+        "esbuild": "0.28.2",
+        "typescript": "7.0.2"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:nuckty/nuckty-site.git"
+    },
+    "author": {
+        "name": "Vitaly Harisov",
+        "email": "vitaly@harisov.name"
+    }
+}
+
