@@ -325,3 +325,11 @@ Documentation pages SHALL omit the right page outline and use its space for text
 - **WHEN** a documentation page is opened on a wide screen
 - **THEN** the article occupies all grid columns to the right of the section navigation
 - **AND** there is no separate page-outline column
+
+### Requirement: Content-sized breadcrumb row
+The desktop documentation grid SHALL size its breadcrumb row to its content independently of sidebar height, and SHALL place the article immediately below it.
+
+#### Scenario: Short section with tall navigation
+- **WHEN** a section overview is shorter than the sidebar
+- **THEN** breadcrumbs and the article remain at the top of the reading column
+- **AND** the sidebar does not create blank space above the article

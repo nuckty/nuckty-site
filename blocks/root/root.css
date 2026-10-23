@@ -319,12 +319,13 @@ img { max-width: 100%; }
 }
 
 @media (min-width: 72rem) {
-    .main.docs-layout { display: grid; grid-template-columns: 14rem minmax(0, 1fr); column-gap: 3rem; justify-content: center; max-width: 67rem; padding: 2rem 2rem 3rem; }
+    .main.docs-layout { display: grid; grid-template-columns: 14rem minmax(0, 1fr); grid-template-rows: min-content 1fr; align-items: start; column-gap: 3rem; justify-content: center; max-width: 67rem; padding: 2rem 2rem 3rem; }
     .sidebar { display: block; padding-right: 0; }
     .sidebar__label { font-family: inherit; font-weight: 600; line-height: 1.35; letter-spacing: 0; text-transform: none; color: var(--ink); }
     .sidebar__link { padding-block: .375rem; line-height: 1.35; }
     .sidebar__group { margin-bottom: 1.5rem; }
-    .reading-nav { margin-bottom: 1.5rem; }
+    .reading-nav { grid-row: 1; margin-bottom: 1.5rem; }
+    .article-column { grid-row: 2; }
     .header { padding-inline: max(2rem, calc((100vw - 63rem) / 2)); gap: 2rem; }
     .header-search__bar { padding-inline: max(2rem, calc((100vw - 63rem) / 2)); }
     .header__nav { margin-left: auto; gap: 1.25rem; }
