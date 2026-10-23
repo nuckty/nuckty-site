@@ -104,11 +104,6 @@ export default function templates(): void {
                 ...pages.filter((page) => page.url === prefix || page.url.startsWith(`${prefix}/`)).map((page) => link(page.url, page.name, `sidebar__link${page.url.split('/').length > 3 ? ' sidebar__link_nested' : ''}`, page.url === url)),
             ])), { id: 'doc-sections', 'aria-label': ru ? 'Разделы документации' : 'Documentation sections' }),
         ], { 'aria-label': ru ? 'Разделы' : 'Sections' });
-        const headings = (data.page.headings ?? []).filter((heading) => heading.level === 2 || heading.level === 3);
-        const toc = element('aside', 'toc', [
-            element('p', 'sidebar__label', ru ? 'На этой странице' : 'On this page'),
-            element('nav', 'toc__nav', headings.map((heading) => link(`#${heading.anchor}`, heading.text, heading.level === 3 ? 'toc__link toc__link_nested' : 'toc__link')), { 'aria-label': ru ? 'Заголовки страницы' : 'Page headings' }),
-        ]);
         const index = pages.findIndex((page) => page.url === url);
         const neighbors = [pages[index - 1], pages[index + 1]];
         const main: BemNode = landing ? element('main', 'main main_landing', demo ? data.content : { block: 'home', props: { lang: data.lang, demoUrl, example: data.page['homeExample'] } }, { id: 'main' }) : element('main', 'main docs-layout', [
@@ -127,7 +122,6 @@ export default function templates(): void {
                     ]),
                 { href: page.url, rel: i === 0 ? 'prev' : 'next', 'data-direction': i === 0 ? 'previous' : 'next', 'aria-label': `${i === 0 ? (ru ? 'Предыдущая страница' : 'Previous page') : (ru ? 'Следующая страница' : 'Next page')}: ${page.name}` }) : null), { 'aria-label': ru ? 'Соседние страницы' : 'Neighboring pages' }),
             ]),
-            toc,
         ], { id: 'main' });
         const footer = element('footer', 'footer', [
             element('div', 'footer__identity', [

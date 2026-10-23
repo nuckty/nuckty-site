@@ -126,24 +126,3 @@ for (const pre of document.querySelectorAll('.article pre, .code-window__code, .
     frame.append(pre, button);
     pre.classList.add('has-copy');
 }
-
-const tocLinks = [...document.querySelectorAll('.toc a')];
-const observer = new IntersectionObserver((entries) => {
-    const visible = entries.find((entry) => entry.isIntersecting);
-
-    if (!visible) {
-        return;
-    }
-
-    for (const link of tocLinks) {
-        if (decodeURIComponent(link.hash.slice(1)) === visible.target.id) {
-            link.setAttribute('aria-current', 'location');
-        } else {
-            link.removeAttribute('aria-current');
-        }
-    }
-}, { rootMargin: '-100px 0px -60% 0px' });
-
-for (const heading of document.querySelectorAll('.article h2, .article h3')) {
-    observer.observe(heading);
-}

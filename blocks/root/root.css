@@ -132,10 +132,6 @@ img { max-width: 100%; }
 .breadcrumbs__item { display: inline-flex; align-items: baseline; gap: 8px; min-width: 0; max-width: 100%; }
 .breadcrumbs__separator { color: var(--line); }
 .breadcrumbs a { padding: 4px 0; overflow-wrap: anywhere; text-decoration: none; }
-.toc { display: none; grid-column: 3; grid-row: 1 / span 2; position: static; align-self: start; max-height: none; overflow: visible; }
-.toc__link { display: block; color: var(--muted); text-decoration: none; padding: 6px 0; font-size: var(--text-small); line-height: 1.5; }
-.toc__link_nested { padding-left: 12px; }
-.toc__link[aria-current] { color: var(--accent); }
 .page-navigation { --navigation-background: #fff; position: relative; isolation: isolate; padding: .5rem 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 30px; }
 .page-navigation::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; left: calc(-1 * var(--navigation-offset, 0px)); width: var(--navigation-width, 100%); background: var(--navigation-background); mask-image: var(--navigation-mask); mask-size: 100% 100%; mask-repeat: no-repeat; pointer-events: none; }
 .page-navigation__link { position: relative; isolation: isolate; display: flex; align-items: center; min-width: 0; min-height: 48px; padding: 7px 0; text-decoration: none; }
@@ -178,7 +174,6 @@ img { max-width: 100%; }
 @media (max-width: 1150px) {
     .header { padding: 0 24px; gap: 20px; }
     .header__nav { gap: 18px; }
-    .toc { display: none; }
     .footer { margin: 0 auto; }
 }
 @media (max-width: 1024px) {
@@ -324,7 +319,7 @@ img { max-width: 100%; }
 }
 
 @media (min-width: 72rem) {
-    .main.docs-layout { display: grid; grid-template-columns: 14rem minmax(0, 46rem); column-gap: 3rem; justify-content: center; max-width: 88rem; padding: 2rem 2rem 3rem; }
+    .main.docs-layout { display: grid; grid-template-columns: 14rem minmax(0, 1fr); column-gap: 3rem; justify-content: center; max-width: 67rem; padding: 2rem 2rem 3rem; }
     .sidebar { display: block; padding-right: 0; }
     .sidebar__label { font-family: inherit; font-weight: 600; line-height: 1.35; letter-spacing: 0; text-transform: none; color: var(--ink); }
     .sidebar__link { padding-block: .375rem; line-height: 1.35; }
@@ -341,7 +336,5 @@ img { max-width: 100%; }
     .header { padding-inline: max(2rem, calc((100vw - 76rem) / 2)); }
     .header-search__bar { padding-inline: max(2rem, calc((100vw - 76rem) / 2)); }
     .footer { max-width: 76rem; }
-    .main.docs-layout { grid-template-columns: 14rem minmax(0, 44rem) 13rem; column-gap: 2.5rem; }
-    .toc { display: block; }
-    .toc__link { padding-block: .5rem; line-height: 1.4; }
+    .main.docs-layout { max-width: 80rem; column-gap: 2.5rem; }
 }
