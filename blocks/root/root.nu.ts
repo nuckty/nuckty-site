@@ -83,7 +83,7 @@ export default function templates(): void {
         ], { id: 'site-search', role: 'search', 'aria-label': ru ? 'Поиск и навигация' : 'Search and navigation', 'data-index-bytes': String(data.page['searchIndexBytes'] ?? ''), 'data-engine-url': String(data.page['searchEngineUrl'] ?? ''), hidden: true }) : null;
         const header = element('header', 'header', [
             logo,
-            element('nav', 'header__nav', [navigation, ...(!demo ? [link(alternateUrl, ru ? 'English' : 'Русский', 'header__language')] : [])], { id: 'main-nav', 'aria-label': ru ? 'Основная навигация' : 'Main navigation' }),
+            element('nav', 'header__nav', navigation, { id: 'main-nav', 'aria-label': ru ? 'Основная навигация' : 'Main navigation' }),
             element('div', 'header__tools', [
                 ...(!demo ? [link(alternateUrl, ru ? 'EN' : 'RU', 'language-link')] : []),
                 element('button', 'icon-button theme-toggle', [

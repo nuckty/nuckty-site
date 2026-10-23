@@ -39,3 +39,6 @@
 .article h3 { font-size: var(--text-card); }
 .article pre { font-size: var(--text-code); box-shadow: 0 0 0 100vmax var(--code); clip-path: inset(0 -100vmax); }
 
+@media (min-width: 48rem) {
+    .article pre { box-shadow: none; clip-path: none; }
+}

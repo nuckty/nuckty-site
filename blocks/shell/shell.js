@@ -53,71 +53,6 @@ const header = document.querySelector('.header');
 const headerSize = new ResizeObserver(() => {
     document.documentElement.style.setProperty('--header-offset', `${header.getBoundingClientRect().height}px`);
 
-    const brandName = document.querySelector('.header .brand__name');
-    const language = document.querySelector('.language-link');
-
-    if (brandName && matchMedia('(max-width: 1024px)').matches) {
-        brandName.style.removeProperty('font-size');
-        brandName.style.removeProperty('transform');
-    }
-
-    if (brandName && language && language.getClientRects().length && !matchMedia('(max-width: 1024px)').matches) {
-        let languageText = language.querySelector('.language-link__text');
-
-        if (!languageText) {
-            languageText = document.createElement('span');
-            languageText.className = 'language-link__text';
-            languageText.textContent = language.textContent;
-            language.replaceChildren(languageText);
-        }
-
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 128;
-        const context = canvas.getContext('2d');
-        const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-
-        function glyphBounds(element) {
-            const style = getComputedStyle(element);
-            context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily.split(',')[0]}`;
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.fillText(element.textContent.trim(), 8, 64);
-            const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
-            let top = canvas.height;
-            let bottom = 0;
-
-            for (let y = 0; y < canvas.height; y++) {
-                for (let x = 0; x < canvas.width; x++) {
-                    if (pixels[(y * canvas.width + x) * 4 + 3] > 112) {
-                        top = Math.min(top, y);
-                        bottom = Math.max(bottom, y + 1);
-                    }
-                }
-            }
-            const marker = document.createElement('span');
-            marker.style.cssText = 'display:inline-block;width:0;height:0;padding:0;margin:0;vertical-align:baseline';
-            element.append(marker);
-            const baseline = marker.getBoundingClientRect().bottom;
-            marker.remove();
-
-            return { top: baseline + top - 64, bottom: baseline + bottom - 64 };
-        }
-
-        brandName.style.transform = 'none';
-        const target = glyphBounds(languageText);
-        brandName.style.fontSize = getComputedStyle(languageText).fontSize;
-
-        for (let i = 0; i < 2; i++) {
-            const bounds = glyphBounds(brandName);
-            const size = parseFloat(getComputedStyle(brandName).fontSize);
-            const scale = (target.bottom - target.top) / (bounds.bottom - bounds.top);
-            brandName.style.fontSize = `${size * scale / rootSize}rem`;
-        }
-
-        const bounds = glyphBounds(brandName);
-        brandName.style.transform = `translateY(${target.top - bounds.top}px)`;
-    }
-
     const footerBrand = document.querySelector('.footer__brand');
     const footerMade = document.querySelector('.footer__made');
 
@@ -129,14 +64,16 @@ const headerSize = new ResizeObserver(() => {
 
     for (const pre of document.querySelectorAll('.article > pre, .article > .code-block > pre')) {
         const frame = pre.closest('.code-block') ?? pre;
-        frame.style.setProperty('--code-offset', `${frame.parentElement.getBoundingClientRect().left}px`);
-        frame.style.setProperty('--code-width', `${document.documentElement.clientWidth}px`);
+        const edgeToEdge = matchMedia('(max-width: 47.999rem)').matches;
+        frame.style.setProperty('--code-offset', `${edgeToEdge ? frame.parentElement.getBoundingClientRect().left : 0}px`);
+        frame.style.setProperty('--code-width', edgeToEdge ? `${document.documentElement.clientWidth}px` : '100%');
     }
 
     for (const navigation of document.querySelectorAll('.page-navigation')) {
-        navigation.style.setProperty('--navigation-offset', `${navigation.getBoundingClientRect().left}px`);
-        navigation.style.setProperty('--navigation-width', `${document.documentElement.clientWidth}px`);
-        const width = document.documentElement.clientWidth;
+        const edgeToEdge = matchMedia('(max-width: 47.999rem)').matches;
+        navigation.style.setProperty('--navigation-offset', `${edgeToEdge ? navigation.getBoundingClientRect().left : 0}px`);
+        const width = edgeToEdge ? document.documentElement.clientWidth : navigation.getBoundingClientRect().width;
+        navigation.style.setProperty('--navigation-width', `${width}px`);
         const height = navigation.getBoundingClientRect().height;
         const middle = height / 2;
         const path = `M32 0H${width - 32}Q${width - 24} 0 ${width - 20} 8L${width - 4} ${middle - 8}Q${width} ${middle} ${width - 4} ${middle + 8}L${width - 20} ${height - 8}Q${width - 24} ${height} ${width - 32} ${height}H32Q24 ${height} 20 ${height - 8}L4 ${middle + 8}Q0 ${middle} 4 ${middle - 8}L20 8Q24 0 32 0Z`;
@@ -210,4 +147,3 @@ const observer = new IntersectionObserver((entries) => {
 for (const heading of document.querySelectorAll('.article h2, .article h3')) {
     observer.observe(heading);
 }
-
