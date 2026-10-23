@@ -14,10 +14,6 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  NUCKTY_ENGINE_REF: 818dec960cfa4cf9a5c95184a7b666eb47ef22cb
-  NUCKTY_DOCS_REF: 9a7fd0fa1c721037ab2898b75878610cf281b262
-
 jobs:
   verify:
     runs-on: ubuntu-24.04
@@ -27,6 +23,8 @@ jobs:
         with:
           persist-credentials: false
           path: nuckty-site
+      - name: Resolve latest successfully verified engine and documentation
+        run: node nuckty-site/.github/resolve-sources.mjs
       - name: Validate exact source set and pinned commit SHAs
         id: refs
         env:
