@@ -334,7 +334,7 @@ img { max-width: 100%; }
 .footer_website .footer__caption, .footer_website .footer__links { color: #c4d3d8; }
 .footer_website .footer__license { color: inherit; }
 .footer_website a:hover { color: #8ad6df; }
-.footer_website .site-wordmark { grid-column: 1 / -1; margin-top: 2rem; font-family: var(--display-font); font-size: 29.5vw; font-weight: 900; line-height: 1.1; letter-spacing: -.075em; text-align: center; }
+.footer_website .site-wordmark { grid-column: 1 / -1; margin-top: 2rem; font-family: var(--display-font); font-size: 29.5vw; font-weight: 900; line-height: 1.1; letter-spacing: -.06em; text-align: center; }
 .footer_website .brand__mark_light { display: none; }
 .footer_website .brand__mark_dark { display: block; }
 .footer_website .footer__brand::after { background: #315b22; }
