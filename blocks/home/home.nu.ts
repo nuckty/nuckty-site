@@ -40,15 +40,6 @@ export default function templates(): void {
             ['Compression', 'Build pipeline', 'Brotli and Gzip copies'],
             ['Hosting', 'Target configuration', 'nginx and Apache files'],
         ];
-        const fits = ru ? [
-            ['документацию', 'Руководства, справочники и архитектурные решения, связанные явной картой сайта.', '/use-cases#для-каких-проектов-документация'],
-            ['руководства', 'Пишите инструкции в Markdown. Заголовки получают иерархические якоря, а ссылки на исходники превращаются в адреса страниц.', '/use-cases#для-каких-проектов-документация'],
-            ['контентный сайт', 'Статьи, инструкции и сообщества. Храните текст отдельно от блоков интерфейса.', '/use-cases#для-каких-проектов-контентные-сайты'],
-        ] : [
-            ['documentation', 'Guides, references and architecture decisions, linked through an explicit sitemap.', '/use-cases#use-cases-documentation'],
-            ['guides', 'Write instructions in Markdown. Headings get hierarchical anchors, and source links become page URLs.', '/use-cases#use-cases-documentation'],
-            ['a content website', 'Articles, instructions and communities. Keep your text separate from the interface blocks.', '/use-cases#use-cases-content-websites'],
-        ];
 
         return el('div', 'home', [
             el('section', 'home-hero', [
@@ -140,13 +131,8 @@ export default function templates(): void {
             ]),
             el('section', 'home-fit home-chapter', [
                 el('h2', '', lines(ru ? 'Дом' : 'A home for', ru ? 'для ваших слов.' : 'your words.')),
-                el('form', 'home-fit__form', [
-                    el('label', '', ru ? 'Я делаю' : 'I’m building', { for: 'home-fit-select' }),
-                    el('select', '', fits.map(([label, description, value]) => el('option', '', label ?? '', { value: value ?? '/use-cases', 'data-description': description ?? '' })), { id: 'home-fit-select' }),
-                    el('button', '', [ru ? 'Найти свой вариант' : 'Find your fit', arrow()], { type: 'submit' }),
-                ], { action: '/use-cases' }),
-                el('p', 'home-fit__description', fits[0]?.[1] ?? '', { 'aria-live': 'polite' }),
-                link('/use-cases', ru ? 'Посмотреть все сценарии' : 'Explore all use cases', 'home-text-link'),
+                el('p', 'home-fit__description', ru ? 'nuckty подходит проектам, где контент хранится в файлах, а страницы можно собрать заранее. Документация, руководства и статьи используют один и тот же движок.' : 'nuckty fits projects where content lives in files and pages can be built ahead of time. Documentation, guides and articles use the same engine.'),
+                link('/use-cases', ru ? 'Где подходит nuckty' : 'Where nuckty fits', 'home-text-link'),
             ]),
             el('section', 'home-start home-chapter', [
                 el('h2', '', lines(ru ? 'Следующая страница' : 'The next page', ru ? 'за вами.' : 'is yours.')),

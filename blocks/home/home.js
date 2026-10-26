@@ -43,17 +43,3 @@ if (workbench) {
         update();
     });
 }
-
-const fit = document.querySelector('.home-fit__form');
-
-if (fit) {
-    const select = fit.querySelector('select');
-    const description = document.querySelector('.home-fit__description');
-    select.addEventListener('change', () => {
-        description.textContent = select.selectedOptions[0].dataset.description;
-    });
-    fit.addEventListener('submit', (event) => {
-        event.preventDefault();
-        location.assign(select.value);
-    });
-}

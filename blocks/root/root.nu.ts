@@ -123,7 +123,7 @@ export default function templates(): void {
                 { href: page.url, rel: i === 0 ? 'prev' : 'next', 'data-direction': i === 0 ? 'previous' : 'next', 'aria-label': `${i === 0 ? (ru ? 'Предыдущая страница' : 'Previous page') : (ru ? 'Следующая страница' : 'Next page')}: ${page.name}` }) : null), { 'aria-label': ru ? 'Соседние страницы' : 'Neighboring pages' }),
             ]),
         ], { id: 'main' });
-        const footer = element('footer', 'footer' + (landing && !demo ? ' footer_home' : ''), [
+        const footer = element('footer', 'footer' + (!demo ? ' footer_website' : ''), [
             element('div', 'footer__identity', [
                 element(url === '/' ? 'span' : 'a', 'footer__brand', [
                     ...(brand ? [element('img', 'footer__mark brand__mark_light', null, { src: `/${brand}`, alt: '', width: '40', height: '28' })] : []),
@@ -139,8 +139,8 @@ export default function templates(): void {
             ], { 'aria-label': ru ? 'Дополнительные ссылки' : 'More links' }),
         ]);
 
-        if (landing && !demo) {
-            footer.content = [footer.content, element('div', 'home-wordmark', 'nuckty', { 'aria-hidden': 'true' })];
+        if (!demo) {
+            footer.content = [footer.content, element('div', 'site-wordmark', 'nuckty', { 'aria-hidden': 'true' })];
         }
         const head: BEMTree = [
             element('meta', '', null, { charset: 'utf-8' }),
@@ -148,7 +148,7 @@ export default function templates(): void {
             element('meta', '', null, { name: 'viewport', content: 'width=device-width,initial-scale=1' }),
             element('meta', '', null, { name: 'description', content: description }),
             element('meta', '', null, { name: 'color-scheme', content: 'light dark' }),
-            element('meta', '', null, { name: 'theme-color', content: landing && !demo ? '#f7f9fa' : '#f6f5ef' }),
+            element('meta', '', null, { name: 'theme-color', content: '#f7f9fa' }),
             element('link', '', null, { rel: 'canonical', href: `${origin}${url}` }),
             element('meta', '', null, { property: 'og:title', content: title }),
             element('meta', '', null, { property: 'og:description', content: description }),
