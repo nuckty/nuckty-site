@@ -1,9 +1,12 @@
 import { highlightCode } from '../../ext/highlight.js';
+import { previewDocument } from './markdown-preview.js';
 import { block, type BEMTree, type BemNode } from 'nuckty';
 import type { HomeExample } from './home.typings.js';
 
 const el = (tag: string, cls: string, content: BEMTree, attrs: BemNode['attrs'] = {}): BemNode => ({ tag, cls, content, attrs, bem: false });
-const link = (href: string, text: string, cls = ''): BemNode => el('a', cls, text, { href });
+const link = (href: string, text: BEMTree, cls = ''): BemNode => el('a', cls, text, { href });
+const arrow = (): BemNode => el('svg', 'home-arrow', el('path', '', null, { d: 'M5 19 19 5M5 5h14v14' }), { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.5', 'aria-hidden': 'true' });
+const lines = (first: string, second: string): BEMTree => [el('span', '', first), el('span', '', second)];
 
 export default function templates(): void {
     block<{ lang?: string; demoUrl?: string; example?: HomeExample }>('home').replace((node) => {
@@ -13,58 +16,144 @@ export default function templates(): void {
         if (!example) {
             throw new Error('Home requires the example prepared by the HTML hook');
         }
-
-        const features = ru ? [
-            ['BEMJSON + nu', 'Один движок для текста и страницы', 'Markdown становится деревом BEMJSON. Шаблоны nu обрабатывают и контент, и блоки документа.', '/how/templates'],
-            ['sitemap.yml', 'Адреса задаёт карта сайта', 'Структура страниц хранится в одном файле. Ссылки на исходники Markdown превращаются в адреса сайта.', '/how/sitemap'],
-            ['ext[]', 'Возможности добавляют расширения', 'Галереи, видео, команды и стадии сборки подключаются через один контракт register(env).', '/ext'],
-            ['targets', 'Общие блоки — несколько сайтов', 'Отдельные языки, домены и карты сайта. Именно так собраны русская и английская версии этого сайта.', '/how/targets'],
-        ] : [
-            ['BEMJSON + nu', 'One engine for content and layout', 'Markdown becomes a BEMJSON tree. nu templates process both content and document blocks.', '/how/templates'],
-            ['sitemap.yml', 'Your sitemap defines the URLs', 'One file describes the page structure. Links to Markdown sources become website URLs.', '/how/sitemap'],
-            ['ext[]', 'Extensions add the capabilities', 'Galleries, video, commands and build stages use the same register(env) contract.', '/ext'],
-            ['targets', 'Shared blocks, separate websites', 'Each target has its own language, domain and sitemap. This website builds Russian and English that way.', '/how/targets'],
-        ];
-        const views = [['bemjson', 'BEMJSON', example.input], ['nu', ru ? 'Шаблон nu' : 'nu template', example.template], ['html', 'HTML', example.html]];
         const demoUrl = node.props?.demoUrl ?? 'http://localhost:8092';
+        const pipeline = [
+            ['Markdown', ru ? 'Пишите контент' : 'Write the content', '/how/markdown'],
+            ['BEMJSON', ru ? 'Описывайте блоки' : 'Describe the blocks', '/how/bemjson'],
+            ['nu', ru ? 'Задавайте разметку' : 'Define the markup', '/how/templates'],
+            ['HTML', ru ? 'Отдавайте файлы' : 'Serve the files', '/out/html'],
+        ];
+        const capabilities = ru ? [
+            ['Контент', 'Страницы Markdown', 'Страницы HTML'],
+            ['Структура', 'sitemap.yml', 'Адреса страниц'],
+            ['Интерфейс', 'BEMJSON + шаблоны nu', 'Разметка блоков'],
+            ['Языки', 'Переводы + таргеты', 'Отдельные сайты + hreflang'],
+            ['Ассеты', 'CSS и JavaScript блоков', 'Бандлы с хешами'],
+            ['Сжатие', 'Конвейер сборки', 'Копии Brotli и Gzip'],
+            ['Хостинг', 'Конфигурация таргета', 'Файлы nginx и Apache'],
+        ] : [
+            ['Content', 'Markdown pages', 'HTML pages'],
+            ['Structure', 'sitemap.yml', 'Page URLs'],
+            ['Interface', 'BEMJSON + nu templates', 'Block markup'],
+            ['Languages', 'Translations + targets', 'Separate sites + hreflang'],
+            ['Assets', 'Block CSS and JavaScript', 'Hashed bundles'],
+            ['Compression', 'Build pipeline', 'Brotli and Gzip copies'],
+            ['Hosting', 'Target configuration', 'nginx and Apache files'],
+        ];
+        const fits = ru ? [
+            ['документацию', 'Руководства, справочники и архитектурные решения, связанные явной картой сайта.', '/use-cases#для-каких-проектов-документация'],
+            ['руководства', 'Пишите инструкции в Markdown. Заголовки получают иерархические якоря, а ссылки на исходники превращаются в адреса страниц.', '/use-cases#для-каких-проектов-документация'],
+            ['контентный сайт', 'Статьи, инструкции и сообщества. Храните текст отдельно от блоков интерфейса.', '/use-cases#для-каких-проектов-контентные-сайты'],
+        ] : [
+            ['documentation', 'Guides, references and architecture decisions, linked through an explicit sitemap.', '/use-cases#use-cases-documentation'],
+            ['guides', 'Write instructions in Markdown. Headings get hierarchical anchors, and source links become page URLs.', '/use-cases#use-cases-documentation'],
+            ['a content website', 'Articles, instructions and communities. Keep your text separate from the interface blocks.', '/use-cases#use-cases-content-websites'],
+        ];
 
         return el('div', 'home', [
-            el('section', 'hero', [
-                el('div', 'hero__text', [
-                    el('p', 'eyebrow', ru ? 'ГЕНЕРАТОР СТАТИЧЕСКИХ САЙТОВ' : 'STATIC SITE GENERATOR'),
-                    el('h1', 'hero__title', ru ? ['Собирайте сайты', el('br', '', null), 'из ', el('em', '', 'текста и блоков.')] : ['Build websites', el('br', '', null), 'from ', el('em', '', 'text and blocks.')]),
-                    el('p', 'hero__intro', ru ? 'nuckty — для документации, руководств и контентных сайтов. Текст пишете в Markdown, интерфейс описываете блоками с шаблонами на TypeScript.' : 'nuckty is for documentation, guides and content websites. Write content in Markdown and build the interface with TypeScript block templates.'),
-                    el('div', 'hero__actions', [link('/how/start', ru ? 'С чего начать →' : 'Get started →', 'button button_primary'), link(demoUrl, ru ? 'Попробовать демо ↗' : 'Try the demo ↗', 'button button_secondary')]),
-                    el('div', 'hero__facts', [el('span', '', 'Node.js 24+'), el('span', '', 'MIT'), link('/use-cases', ru ? 'Для каких проектов ↗' : 'Is it a fit? ↗')]),
+            el('section', 'home-hero', [
+                el('h1', 'home-hero__title', [
+                    el('span', 'home-hero__in', ru ? 'Текст на входе.' : 'Text in.'),
+                    el('span', 'home-hero__out', ru ? 'Сайты на выходе.' : 'Sites out.'),
                 ]),
-                el('section', 'home-example', [
-                    el('div', 'home-example__heading', [el('strong', '', ru ? 'Один блок → HTML' : 'One block → HTML'), el('span', '', ru ? 'Результат nuckty' : 'nuckty output')]),
-                    el('div', 'home-example__sources', [
-                        el('div', 'home-example__tabs', views.map(([id, label], index) => el('button', 'home-example__tab', label ?? '', { type: 'button', role: 'tab', id: `home-${id}-tab`, 'aria-selected': String(index === 0), 'aria-controls': `home-${id}-panel`, tabindex: index === 0 ? '0' : '-1' })), { role: 'tablist', 'aria-label': ru ? 'Этапы сборки блока' : 'Block build steps', hidden: true }),
-                        ...views.map(([id, , source], index) => el('div', 'home-example__panel', el('pre', 'code-window__code', el('code', '', { raw: highlightCode(source ?? '', id === 'html' ? 'html' : id === 'bemjson' ? 'json' : 'ts') })), { role: 'tabpanel', id: `home-${id}-panel`, 'aria-labelledby': `home-${id}-tab`, hidden: index !== 0, tabindex: '0' })),
-                    ], { 'data-source-tabs': 'home' }),
-                    el('div', 'home-example__preview', [el('span', 'home-example__label', ru ? 'НА СТРАНИЦЕ' : 'ON THE PAGE'), example.tree]),
-                    el('p', 'home-example__explanation', ru ? 'BEMJSON описывает блок. Шаблон nu задаёт его разметку.' : 'BEMJSON describes the block. A nu template defines its markup.'),
-                ], { 'aria-label': ru ? 'Пример сборки блока' : 'A block build example' }),
+                el('div', 'home-hero__lower', [
+                    el('div', 'home-hero__description', [
+                        el('p', 'home-hero__intro', ru ? 'Генератор статических сайтов для документации, руководств и контентных проектов.' : 'A static site generator for documentation, guides and content websites.'),
+                        el('p', 'home-hero__detail', ru ? 'Markdown, BEMJSON и шаблоны блоков на TypeScript.' : 'Markdown, BEMJSON and TypeScript block templates.'),
+                    ]),
+                    link('#try', [ru ? 'Посмотреть в работе' : 'See it work', arrow()], 'home-hero__link'),
+                    el('div', 'home-hero__bottom', [
+                        el('span', '', ru ? 'Ваш текст. Ваша разметка. Ваши файлы.' : 'Your words. Your markup. Your files.'),
+                        link('https://github.com/nuckty/nuckty/blob/main/LICENSE', ru ? 'Открытый код, лицензия MIT' : 'Open source, MIT licensed'),
+                    ]),
+                ]),
             ]),
-            el('nav', 'pipeline-strip', [
-                el('span', 'pipeline-strip__label', ru ? 'От исходника к странице' : 'From source to page'),
-                ...[['/how/markdown', 'Markdown'], ['/how/bemjson', 'BEMJSON'], ['/how/templates', 'nu'], ['/out/html', 'HTML']].flatMap(([href, text], index) => [link(href ?? '/', text ?? '', 'pipeline-strip__step'), ...(index < 3 ? [el('span', 'pipeline-strip__arrow', '→', { 'aria-hidden': 'true' })] : [])]),
-                link('/how/pipeline', ru ? 'Весь конвейер ↗' : 'The full pipeline ↗', 'pipeline-strip__more'),
-            ], { 'aria-label': ru ? 'Как строится страница' : 'How a page is built' }),
-            el('section', 'features section', [
-                el('div', 'section__heading', [el('h2', '', ru ? 'Как устроен nuckty' : 'How nuckty works'), el('p', '', ru ? 'Контент, шаблоны и сборка — в вашем проекте.' : 'Content, templates and build logic stay in your project.')]),
-                el('div', 'features__grid', features.map(([label, title, text, href]) => el('a', 'feature', [el('span', 'feature__label', label ?? ''), el('div', 'feature__copy', [el('h3', '', title ?? ''), el('p', '', text ?? '')]), el('span', 'feature__arrow', '↗', { 'aria-hidden': 'true' })], { href: href ?? '/' }))),
+            el('section', 'home-route home-chapter', [
+                el('div', 'home-chapter__heading', [
+                    el('h2', '', lines(ru ? 'У каждого слова' : 'Every word', ru ? 'свой маршрут.' : 'has a route.')),
+                    el('p', '', ru ? 'Markdown становится деревом BEMJSON. Шаблоны nu превращают дерево в HTML. Один движок для контента и интерфейса.' : 'Markdown becomes a BEMJSON tree. nu templates turn the tree into HTML. One engine for content and layout.'),
+                ]),
+                el('nav', 'home-route__steps', pipeline.map(([name, description, href]) => link(href ?? '/', [el('span', 'home-route__name', name ?? ''), el('span', 'home-route__detail', description ?? '')], 'home-route__step')), { 'aria-label': ru ? 'От исходника к странице' : 'From source to page' }),
+                el('div', 'home-source-grid', [
+                    el('figure', 'home-source', [el('figcaption', '', ru ? 'Блок · BEMJSON' : 'The block · BEMJSON'), el('pre', 'code-window__code', el('code', '', { raw: highlightCode(example.input, 'json') }))], { id: 'home-bemjson-panel' }),
+                    el('figure', 'home-source', [el('figcaption', '', ru ? 'Разметка · шаблон nu' : 'The markup · nu template'), el('pre', 'code-window__code', el('code', '', { raw: highlightCode(example.template, 'ts') }))], { id: 'home-nu-panel' }),
+                ]),
             ]),
-            el('section', 'output-section section', [
-                el('div', 'output-section__copy', [el('p', 'eyebrow', ru ? 'РЕЗУЛЬТАТ СБОРКИ' : 'BUILD OUTPUT'), el('h2', '', ru ? 'Собрали — публикуйте файлы.' : 'Build once. Serve the files.'), el('p', '', ru ? 'Готовые страницы и ассеты, их сжатые копии и манифест. Сборка также готовит конфигурацию nginx и Apache. Для отдачи страниц серверу не нужен nuckty.' : 'Pages and assets, their compressed copies and a manifest. The build also prepares nginx and Apache configuration. The server does not need nuckty to serve the pages.'), link('/out/hosting', ru ? 'Как устроена отдача →' : 'How the files are served →', 'text-link')]),
-                el('div', 'file-tree', [el('div', 'file-tree__header', [el('code', '', 'site/'), el('span', '', ru ? 'статический артефакт' : 'static artifact')]), ...[
-                    ['html/', ru ? 'страницы' : 'pages'], ['css/ · js/', ru ? 'бандлы с хэшами' : 'hashed bundles'], ['svg/ · png/ · …', ru ? 'изображения' : 'images'], ['brotli/ · gzip/', ru ? 'сжатые копии' : 'compressed copies'], ['manifest.json', ru ? 'размеры и хэши' : 'sizes and hashes'], ['.htaccess', 'Apache'],
-                ].map(([name, text]) => el('div', 'file-tree__row', [el('code', '', name ?? ''), el('span', '', text ?? '')])), el('div', 'file-tree__note', [el('code', '', '.build/nginx.conf'), ' — nginx'])]),
+            el('section', 'home-proof home-chapter', [
+                el('div', 'home-chapter__heading', [
+                    el('h2', '', lines(ru ? 'Написано.' : 'Written.', ru ? 'Отображено.' : 'Rendered.')),
+                    el('div', 'home-chapter__copy', [
+                        el('p', '', ru ? 'Измените заголовок или абзац. Посмотрите на страницу, а затем — на её HTML.' : 'Change the heading or paragraph. Read the page, then inspect its HTML.'),
+                        el('p', 'home-note', ru ? 'Этот предпросмотр поддерживает заголовки и абзацы. Полная сборка nuckty выполняется в Node.js.' : 'This preview supports headings and paragraphs. The complete nuckty build runs in Node.js.'),
+                    ]),
+                ]),
+                el('div', 'home-markdown', [
+                    el('div', 'home-markdown__formats', [el('span', '', '.md'), el('span', '', '.html')], { 'aria-hidden': 'true' }),
+                    el('div', 'home-markdown__input', [
+                        el('div', 'home-markdown__toolbar', [el('label', '', ru ? 'Ваш Markdown' : 'Your Markdown', { for: 'home-markdown-input' }), el('button', 'home-markdown__reset', ru ? 'Сбросить' : 'Reset', { type: 'button' })]),
+                        el('textarea', '', example.markdown.source, { id: 'home-markdown-input', spellcheck: 'false', rows: '7', 'aria-describedby': 'home-markdown-hint' }),
+                        el('p', 'home-note', ru ? 'Попробуйте заголовок с # в начале, а затем — абзац.' : 'Try a heading starting with #, then a paragraph.', { id: 'home-markdown-hint' }),
+                    ]),
+                    el('div', 'home-markdown__result', [
+                        el('div', 'home-markdown__toolbar', [el('span', '', ru ? 'Что увидит читатель' : 'What the reader sees'), el('div', 'home-markdown__tabs', [
+                            el('button', '', ru ? 'Страница' : 'Page', { type: 'button', role: 'tab', id: 'home-page-tab', 'aria-selected': 'true', 'aria-controls': 'home-page-panel', tabindex: '0' }),
+                            el('button', '', 'HTML', { type: 'button', role: 'tab', id: 'home-html-tab', 'aria-selected': 'false', 'aria-controls': 'home-html-panel', tabindex: '-1' }),
+                        ], { role: 'tablist', 'aria-label': ru ? 'Формат предпросмотра' : 'Preview format' })]),
+                        el('div', '', el('iframe', '', null, { title: ru ? 'Предпросмотр страницы' : 'Page preview', sandbox: '', srcdoc: previewDocument(example.markdown.html, ru ? 'ru' : 'en') }), { id: 'home-page-panel', role: 'tabpanel', 'aria-labelledby': 'home-page-tab' }),
+                        el('div', '', el('pre', 'code-window__code', el('code', '', example.markdown.html, { id: 'home-markdown-html' })), { id: 'home-html-panel', role: 'tabpanel', 'aria-labelledby': 'home-html-tab', hidden: true }),
+                    ]),
+                ], { id: 'try' }),
+                link(demoUrl, [ru ? 'Открыть полное демо nuckty' : 'Explore the full nuckty demo', arrow()], 'home-text-link home-proof__more'),
             ]),
-            el('section', 'start-section', [
-                el('div', '', [el('h2', '', ru ? 'От первой страницы до сайта' : 'From a first page to a website'), el('p', '', ru ? 'Зависимости → конфигурация → карта сайта → Markdown → сборка.' : 'Dependencies → configuration → sitemap → Markdown → build.')]),
-                link('/how/start', ru ? 'Открыть руководство →' : 'Open the guide →', 'button button_primary'),
+            el('section', 'home-output home-chapter', [
+                el('div', 'home-output__copy', [
+                    el('h2', '', lines(ru ? 'Одна сборка.' : 'Build once.', ru ? 'Файлы остаются у вас.' : 'Keep the files.')),
+                    el('p', '', ru ? 'Страницы, ассеты, сжатые копии и манифест. Сборка готовит конфигурацию nginx и Apache для совместимого сервера.' : 'Pages, assets, compressed copies and a manifest. The build prepares nginx and Apache configuration for a compatible server.'),
+                    el('p', 'home-note', ru ? 'Чтобы отдавать страницы, серверу не нужен nuckty.' : 'The server does not need nuckty to serve the pages.'),
+                    link('/out/hosting', [ru ? 'Подробнее о хостинге' : 'Read about hosting', arrow()], 'home-text-link'),
+                    el('figure', 'home-source home-source_map', [el('figcaption', '', ru ? 'Карта маршрутов · sitemap.yml' : 'The route map · sitemap.yml'), el('pre', '', el('code', '', { raw: highlightCode(ru ? 'sitemap:\n  - Главная [/, index.md]\n  - О сайте [/about, about.md]' : 'sitemap:\n  - Home [/, index.md]\n  - About [/about, about.md]', 'yaml') }))]),
+                ]),
+                el('div', 'home-files', [
+                    el('h3', '', ru ? 'Что содержит сборка' : 'What your build contains'),
+                    el('dl', 'home-files__list', [
+                        ['html/', ru ? 'Страницы' : 'Pages'], ['css/ · js/', ru ? 'Стили и скрипты' : 'Styles & scripts'], ['svg/ · png/', ru ? 'Изображения' : 'Images'], ['brotli/ · gzip/', ru ? 'Сжатые копии' : 'Compressed copies'], ['manifest.json', ru ? 'Размеры и хэши' : 'Sizes & hashes'], ['.htaccess', 'Apache'], ['.build/nginx.conf', 'nginx'],
+                    ].flatMap(([file, description]) => [el('dt', '', el('code', '', file ?? '')), el('dd', '', description ?? '')])),
+                    el('p', 'home-files__note', ru ? 'Статический артефакт. Готов к публикации.' : 'A static artifact. Ready to publish.'),
+                    el('pre', 'home-files__tree', el('code', '', 'site/\n├── html/\n├── css/\n├── svg/\n├── brotli/\n├── gzip/\n├── .htaccess\n└── manifest.json')),
+                ]),
+            ]),
+            el('section', 'home-capabilities home-chapter', [
+                el('div', 'home-chapter__heading', [
+                    el('h2', '', lines(ru ? 'Вы пишете.' : 'You write.', ru ? 'nuckty собирает.' : 'nuckty builds.')),
+                    el('p', '', ru ? 'Храните контент, шаблоны и логику сборки в своём проекте. Добавляйте возможности через расширения.' : 'Keep content, templates and build logic in your project. Add capabilities through extensions.'),
+                ]),
+                el('div', 'home-table', el('table', '', [
+                    el('caption', 'visually-hidden', ru ? 'Что вы задаёте и что создаёт сборка nuckty' : 'What you provide and what the nuckty build produces'),
+                    el('thead', '', el('tr', '', [ru ? 'В вашем проекте' : 'In your project', ru ? 'Вы задаёте' : 'You provide', ru ? 'nuckty создаёт' : 'nuckty produces'].map((text) => el('th', '', text, { scope: 'col' })))),
+                    el('tbody', '', capabilities.map(([label, input, output]) => el('tr', '', [el('th', '', label ?? '', { scope: 'row' }), el('td', '', input ?? ''), el('td', '', output ?? '')]))),
+                ])),
+                el('div', 'home-boundary', [
+                    el('h3', '', ru ? 'Статическая часть.' : 'The static part.'),
+                    el('p', '', ru ? 'Для динамических данных, серверной авторизации или постоянного состояния приложения nuckty собирает статическую часть. CMS, серверный API и визуальный редактор находятся за пределами ядра. Блоки могут содержать клиентский JavaScript.' : 'For dynamic data, server authentication or persistent application state, nuckty builds the static part. A CMS, server API and visual editor are outside the core. Blocks can include client JavaScript.'),
+                    link(ru ? '/use-cases#для-каких-проектов-когда-понадобится-другой-инструмент' : '/use-cases#use-cases-when-another-tool-is-needed', ru ? 'Где подходит nuckty' : 'Where nuckty fits', 'home-text-link'),
+                ]),
+            ]),
+            el('section', 'home-fit home-chapter', [
+                el('h2', '', lines(ru ? 'Дом' : 'A home for', ru ? 'для ваших слов.' : 'your words.')),
+                el('form', 'home-fit__form', [
+                    el('label', '', ru ? 'Я делаю' : 'I’m building', { for: 'home-fit-select' }),
+                    el('select', '', fits.map(([label, description, value]) => el('option', '', label ?? '', { value: value ?? '/use-cases', 'data-description': description ?? '' })), { id: 'home-fit-select' }),
+                    el('button', '', [ru ? 'Найти свой вариант' : 'Find your fit', arrow()], { type: 'submit' }),
+                ], { action: '/use-cases' }),
+                el('p', 'home-fit__description', fits[0]?.[1] ?? '', { 'aria-live': 'polite' }),
+                link('/use-cases', ru ? 'Посмотреть все сценарии' : 'Explore all use cases', 'home-text-link'),
+            ]),
+            el('section', 'home-start home-chapter', [
+                el('h2', '', lines(ru ? 'Следующая страница' : 'The next page', ru ? 'за вами.' : 'is yours.')),
+                el('div', 'home-start__actions', [
+                    link('/how/start', [ru ? 'Открыть руководство' : 'Open the guide', arrow()], 'home-start__primary'),
+                    link('/nuckty-starter.zip', ru ? 'Скачать стартовый проект' : 'Download starter', 'home-start__download'),
+                ]),
             ]),
         ]);
     });

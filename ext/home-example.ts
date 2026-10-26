@@ -1,5 +1,6 @@
 import { copyFile, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { markdownTree } from '../blocks/home/markdown-preview.js';
 import { assertArtifactPath, render, type BemNode, type DocumentData, type NucktyEnv } from 'nuckty';
 
 export function register(env: NucktyEnv): void {
@@ -16,13 +17,16 @@ export function register(env: NucktyEnv): void {
             block: 'card',
             content: [
                 { elem: 'title', content: ru ? 'Справочник' : 'Field guide' },
-                { elem: 'description', content: ru ? 'Руководства из Markdown, интерфейс из блоков.' : 'Markdown guides, with an interface built from blocks.' },
+                { elem: 'description', content: ru ? 'Интерфейс, собранный из блоков.' : 'An interface built from blocks.' },
             ],
         };
         const children = tree.content as BemNode[];
         const input = ['{', '  "block": "card",', '  "content": [', ...children.map((child, index) => `    ${JSON.stringify(child)}${index === children.length - 1 ? '' : ','}`), '  ]', '}'].join('\n');
 
+        const source = ru ? '# Мой первый сайт\n\nЭта страница собрана на nuckty: Markdown → BEMJSON → HTML.' : '# My first website\n\nThis page is built with nuckty: Markdown → BEMJSON → HTML.';
+
         sitemap.pages['/']!['homeExample'] = {
+            markdown: { source, html: render(markdownTree(source), { templates: ctx.templates }) },
             tree, input,
             template: await readFile(path.join(ctx.cwd, 'blocks/card/card.nu.ts'), 'utf8'),
             html: render(tree, { templates: ctx.templates }),

@@ -108,8 +108,9 @@ for (const target of targets) {
             const panelCode = (id) => decode(home.slice(home.indexOf(`id=${id}`)).match(/<code>([\s\S]*?)<\/code>/)[1].replace(/<\/?span[^>]*>/g, ''));
             assert.equal(panelCode('home-nu-panel'), await readFile(path.join(root, 'blocks/card/card.nu.ts'), 'utf8'), 'template source must be the actual block file');
             assert.equal(JSON.parse(panelCode('home-bemjson-panel')).block, 'card');
-            assert.ok(home.includes(panelCode('home-html-panel')), 'the displayed HTML must equal the rendered card');
-            assert.match(pages.get('/').html, /STATIC SITE GENERATOR|ГЕНЕРАТОР СТАТИЧЕСКИХ САЙТОВ/);
+            assert.match(home, /sandbox=""/);
+            assert.match(home, /home-markdown-html/);
+            assert.doesNotMatch(home, /ГЕНЕРАТОР СТАТИЧЕСКИХ САЙТОВ|STATIC SITE GENERATOR/);
             const search = JSON.parse(await readFile(path.join(root, 'content/search-data.json'), 'utf8'));
             const startText = search[target].find((entry) => entry.url === '/how/start').text;
             assert.ok(!startText.includes('<a') && !startText.includes('href='), 'search snippets must omit HTML markup');

@@ -1,14 +1,26 @@
-for (const example of document.querySelectorAll('[data-source-tabs]')) {
-    const tabs = [...example.querySelectorAll('[role="tab"]')];
+import { markdownTree, previewDocument } from './markdown-preview.ts';
+
+import { renderToHtml } from 'nuckty/src/bem/render-to-html.ts';
+
+const workbench = document.querySelector('.home-markdown');
+
+if (workbench) {
+    const input = workbench.querySelector('textarea');
+    const frame = workbench.querySelector('iframe');
+    const output = workbench.querySelector('#home-markdown-html');
+    const tabs = [...workbench.querySelectorAll('[role="tab"]')];
+
+    function update() {
+        const html = renderToHtml(markdownTree(input.value));
+        output.textContent = html;
+        frame.srcdoc = previewDocument(html, document.documentElement.lang);
+    }
 
     function select(tab) {
         for (const item of tabs) {
             item.setAttribute('aria-selected', String(item === tab));
             item.tabIndex = item === tab ? 0 : -1;
-        }
-
-        for (const panel of example.querySelectorAll('[role="tabpanel"]')) {
-            panel.hidden = panel.id !== tab.getAttribute('aria-controls');
+            document.getElementById(item.getAttribute('aria-controls')).hidden = item !== tab;
         }
     }
 
@@ -25,5 +37,23 @@ for (const example of document.querySelectorAll('[data-source-tabs]')) {
             }
         });
     }
-    example.querySelector('[role="tablist"]').hidden = false;
+    input.addEventListener('input', update);
+    workbench.querySelector('.home-markdown__reset').addEventListener('click', () => {
+        input.value = input.defaultValue;
+        update();
+    });
+}
+
+const fit = document.querySelector('.home-fit__form');
+
+if (fit) {
+    const select = fit.querySelector('select');
+    const description = document.querySelector('.home-fit__description');
+    select.addEventListener('change', () => {
+        description.textContent = select.selectedOptions[0].dataset.description;
+    });
+    fit.addEventListener('submit', (event) => {
+        event.preventDefault();
+        location.assign(select.value);
+    });
 }

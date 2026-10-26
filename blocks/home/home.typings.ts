@@ -5,5 +5,6 @@ export interface HomeExample {
     input: string;
     template: string;
     html: string;
+    markdown: { source: string; html: string };
 }
 
