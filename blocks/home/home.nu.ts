@@ -26,7 +26,7 @@ export default function templates(): void {
         const capabilities = ru ? [
             ['Контент', 'Страницы Markdown', 'Страницы HTML'],
             ['Структура', 'sitemap.yml', 'Адреса страниц'],
-            ['Интерфейс', 'BEMJSON + шаблоны nu', 'Разметка блоков'],
+            ['Интерфейс', 'BEMJSON + шаблоны nu.ts', 'Разметка блоков'],
             ['Языки', 'Переводы + таргеты', 'Отдельные сайты + hreflang'],
             ['Ассеты', 'CSS и JavaScript блоков', 'Бандлы с хешами'],
             ['Сжатие', 'Конвейер сборки', 'Копии Brotli и Gzip'],
@@ -34,7 +34,7 @@ export default function templates(): void {
         ] : [
             ['Content', 'Markdown pages', 'HTML pages'],
             ['Structure', 'sitemap.yml', 'Page URLs'],
-            ['Interface', 'BEMJSON + nu templates', 'Block markup'],
+            ['Interface', 'BEMJSON + nu.ts templates', 'Block markup'],
             ['Languages', 'Translations + targets', 'Separate sites + hreflang'],
             ['Assets', 'Block CSS and JavaScript', 'Hashed bundles'],
             ['Compression', 'Build pipeline', 'Brotli and Gzip copies'],
@@ -62,12 +62,12 @@ export default function templates(): void {
             el('section', 'home-route home-chapter', [
                 el('div', 'home-chapter__heading', [
                     el('h2', '', lines(ru ? 'У каждого слова' : 'Every word', ru ? 'свой маршрут.' : 'has a route.')),
-                    el('p', '', ru ? 'Markdown становится деревом BEMJSON. Шаблоны nu превращают дерево в HTML. Один движок для контента и интерфейса.' : 'Markdown becomes a BEMJSON tree. nu templates turn the tree into HTML. One engine for content and layout.'),
+                    el('p', '', ru ? 'Markdown становится деревом BEMJSON. Шаблоны nu.ts превращают дерево в HTML. Один движок для контента и интерфейса.' : 'Markdown becomes a BEMJSON tree. nu.ts templates turn the tree into HTML. One engine for content and layout.'),
                 ]),
                 el('nav', 'home-route__steps', pipeline.map(([name, description, href]) => link(href ?? '/', [el('span', 'home-route__name', name ?? ''), el('span', 'home-route__detail', description ?? '')], 'home-route__step')), { 'aria-label': ru ? 'От исходника к странице' : 'From source to page' }),
                 el('div', 'home-source-grid', [
                     el('figure', 'home-source', [el('figcaption', '', ru ? 'Блок · BEMJSON' : 'The block · BEMJSON'), el('pre', 'code-window__code', el('code', '', { raw: highlightCode(example.input, 'json') }))], { id: 'home-bemjson-panel' }),
-                    el('figure', 'home-source', [el('figcaption', '', ru ? 'Разметка · шаблон nu' : 'The markup · nu template'), el('pre', 'code-window__code', el('code', '', { raw: highlightCode(example.template, 'ts') }))], { id: 'home-nu-panel' }),
+                    el('figure', 'home-source', [el('figcaption', '', ru ? 'Разметка · шаблон nu.ts' : 'The markup · nu.ts template'), el('pre', 'code-window__code', el('code', '', { raw: highlightCode(example.template, 'ts') }))], { id: 'home-nu-panel' }),
                 ]),
             ]),
             el('section', 'home-proof home-chapter', [

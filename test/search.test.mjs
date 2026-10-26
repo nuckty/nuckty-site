@@ -31,7 +31,7 @@ for (const language of ['ru', 'en']) {
     });
 
     test(`${language}: inflections and a typo find the template guide`, () => {
-        for (const term of language === 'ru' ? ['шаблонами', 'шаблны', 'шаблны nu'] : ['template', 'templtes', 'templtes nu']) {
+        for (const term of language === 'ru' ? ['шаблонами', 'шаблны', 'шаблны nu', 'шаблоны nu.ts'] : ['template', 'templtes', 'templtes nu', 'nu.ts templates']) {
             assert.equal(searchPages(databases[language], term).hits[0]?.document.url, '/how/templates', term);
         }
     });
@@ -53,7 +53,7 @@ for (const language of ['ru', 'en']) {
 
 test('short terms match complete tokens and multi-word queries require every term', () => {
     const database = createSearch([
-        { url: '/nu', title: 'nu templates', headings: '', text: 'A guide to nu.' },
+        { url: '/nu', title: 'nu.ts templates', headings: '', text: 'A guide to nu.' },
         { url: '/numbers', title: 'Numbers', headings: '', text: 'Numbers and numbering.' },
         { url: '/split', title: 'Templates', headings: '', text: 'The nu renderer.' },
     ], 'en');
