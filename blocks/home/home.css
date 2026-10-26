@@ -76,7 +76,7 @@
 .home-route :focus-visible { outline-color: #8ad6df; }
 .home-proof { background: var(--paper); }
 .code-window__code { height: 16rem; overflow: auto; margin: 0; padding: 1.25rem; color: var(--code-ink); background: var(--code); white-space: pre; overflow-wrap: normal; font: var(--text-code)/1.65 ui-monospace, "SFMono-Regular", Consolas, monospace; tab-size: 4; }
-.home-output { --accent: #0d7480; --accent-hover: #085e68; display: grid; gap: 2.5rem; background: #e8eff1; color: #1f3038; }
+.home-output { --accent: #0d7480; --accent-hover: #085e68; --muted: #53656d; display: grid; gap: 2.5rem; background: #e8eff1; color: #1f3038; }
 .home-output .home-note { color: #53656d; }
 .home-output__copy > p { margin-top: 1.5rem; }
 .home-output__copy > .home-text-link { margin-top: 1.75rem; }
@@ -124,7 +124,7 @@
 .home-source { min-width: 0; margin: 0; padding: 1.25rem; background: #1c333c; color: var(--home-light); --code: #1c333c; --muted: #c4d3d8; --accent: #8ad6df; --code-ink: #f7f9fa; --syntax-keyword: #ff9da9; --syntax-string: #a2d8b3; --syntax-comment: #b0b3b8; --syntax-number: #edc891; --syntax-property: #a0c7ff; --syntax-function: #d2b5ef; }
 .home-source figcaption { margin-bottom: 1.25rem; color: #c4d3d8; font-size: 1rem; }
 .home-source .code-window__code { height: auto; min-height: 15rem; padding: 0; background: transparent; }
-.home-source .code-block .code-window__code.has-copy { padding: 0; }
+.home-source.code-block .code-window__code.has-copy { padding: 0; }
 .home-source_map { margin-top: 3rem; background: #f7f9fa; color: #1f3038; --code: #f7f9fa; --code-ink: #1f3038; --muted: #53656d; --accent: #0d7480; --syntax-keyword: #a62d42; --syntax-string: #14634b; --syntax-comment: #606860; --syntax-number: #795421; --syntax-property: #275ca3; --syntax-function: #6b4692; }
 .home-source_map figcaption { color: #53656d; }
 .home-source_map pre { margin: 0; overflow: auto; font-size: var(--text-code); line-height: 1.65; }
