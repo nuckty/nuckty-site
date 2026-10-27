@@ -19,7 +19,7 @@ export default function templates(): void {
         tag: 'nav',
         attrs: (node, next) => ({ id: 'doc-sections', ...next(), ...attributes(node, ['id', 'aria-label']) }),
     });
-    block('sidebar').when((node) => !node.elem)({
+    block('sidebar')({
         tag: 'aside',
         attrs: (node, next) => ({ ...next(), ...attributes(node, ['aria-label']) }),
     });

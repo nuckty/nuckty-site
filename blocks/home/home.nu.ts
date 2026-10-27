@@ -649,10 +649,10 @@ export default function templates(): void {
     block('home').elem('start')({
         tag: 'section',
     });
-    block('home').when((node) => !node.elem)({
+    block('home')({
         tag: 'div',
     });
-    block<{ lang?: string; demoUrl?: string; example?: import('./home.typings.js').HomeExample }>('home').when(
-        (node) => !node.elem && Boolean(node.props),
+    block<{ lang?: string; demoUrl?: string; example?: import('./home.typings.js').HomeExample }>('home').when((node) =>
+        Boolean(node.props),
     )({ content: homeContent });
 }

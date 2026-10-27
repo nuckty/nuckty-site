@@ -18,7 +18,7 @@ export default function templates(): void {
     block('header-search').elem('panel')({
         tag: 'div',
     });
-    block('header-search').when((node) => !node.elem)({
+    block('header-search')({
         tag: 'div',
         attrs: (node, next) => ({
             id: 'site-search',

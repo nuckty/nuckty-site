@@ -28,7 +28,7 @@ export default function templates(): void {
     block('site-map').elem('group')({
         tag: 'section',
     });
-    block('site-map').when((node) => !node.elem)({
+    block('site-map')({
         tag: 'nav',
         attrs: (node, next) => ({ ...next(), ...attributes(node, ['aria-label']) }),
     });

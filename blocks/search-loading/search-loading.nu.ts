@@ -9,7 +9,7 @@ export default function templates(): void {
         tag: 'progress',
         attrs: (node, next) => ({ max: '100', ...next(), ...attributes(node, ['max', 'aria-label']) }),
     });
-    block('search-loading').when((node) => !node.elem)({
+    block('search-loading')({
         tag: 'div',
         attrs: (node, next) => ({ hidden: true, role: 'status', ...next(), ...attributes(node, ['hidden', 'role']) }),
     });
