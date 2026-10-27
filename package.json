@@ -24,11 +24,11 @@
     "dependencies": {
         "@orama/orama": "3.1.18",
         "@orama/stemmers": "3.1.18",
-        "@nuckty/core": "1.0.0-beta1",
-        "@nuckty/ext-block-root": "1.0.0-beta1",
-        "@nuckty/ext-command-serve": "1.0.0-beta1",
-        "@nuckty/ext-command-validate-vnu": "1.0.0-beta1",
-        "@nuckty/ext-markdown-typography-ru": "1.0.0-beta1"
+        "@nuckty/core": "1.0.0-beta2",
+        "@nuckty/ext-block-root": "1.0.0-beta2",
+        "@nuckty/ext-command-serve": "1.0.0-beta2",
+        "@nuckty/ext-command-validate-vnu": "1.0.0-beta2",
+        "@nuckty/ext-markdown-typography-ru": "1.0.0-beta2"
     },
     "devDependencies": {
         "@tanstack/highlight": "0.1.0",
