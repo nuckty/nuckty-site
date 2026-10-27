@@ -110,6 +110,11 @@ for (const target of targets) {
             assert.equal(JSON.parse(panelCode('home-bemjson-panel')).block, 'card');
             assert.match(home, /sandbox=""/);
             assert.match(home, /home-markdown-html/);
+            assert.match(home, /class="code code_wrap_soft code-window__code"/);
+            assert.doesNotMatch(home, /site-wordmark/);
+            assert.match(home, /class=home-route__name>nu\.ts</);
+            assert.equal((home.match(/Где подходит nuckty|Where nuckty fits/g) ?? []).length, 1);
+            assert.equal(homePage.tags.filter(({ tag, attrs }) => tag.startsWith('<th') && attrs.scope === 'row').length, 7);
             assert.doesNotMatch(home, /ГЕНЕРАТОР СТАТИЧЕСКИХ САЙТОВ|STATIC SITE GENERATOR/);
             const search = JSON.parse(await readFile(path.join(root, 'content/search-data.json'), 'utf8'));
             const startText = search[target].find((entry) => entry.url === '/how/start').text;

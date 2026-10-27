@@ -139,9 +139,6 @@ export default function templates(): void {
             ], { 'aria-label': ru ? 'Дополнительные ссылки' : 'More links' }),
         ]);
 
-        if (!demo) {
-            footer.content = [footer.content, element('div', 'site-wordmark', 'nuckty', { 'aria-hidden': 'true' })];
-        }
         const head: BEMTree = [
             element('meta', '', null, { charset: 'utf-8' }),
             element('title', '', title),

@@ -6,7 +6,7 @@ import type { HomeExample } from './home.typings.js';
 const el = (tag: string, cls: string, content: BEMTree, attrs: BemNode['attrs'] = {}): BemNode => ({ tag, cls, content, attrs, bem: false });
 const link = (href: string, text: BEMTree, cls = ''): BemNode => el('a', cls, text, { href });
 const arrow = (): BemNode => el('svg', 'home-arrow', el('path', '', null, { d: 'M5 19 19 5M5 5h14v14' }), { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.5', 'aria-hidden': 'true' });
-const lines = (first: string, second: string): BEMTree => [el('span', '', first), el('span', '', second)];
+const lines = (first: string, second: string): BEMTree => [el('span', '', first), ' ', el('span', '', second)];
 
 export default function templates(): void {
     block<{ lang?: string; demoUrl?: string; example?: HomeExample }>('home').replace((node) => {
@@ -20,7 +20,7 @@ export default function templates(): void {
         const pipeline = [
             ['Markdown', ru ? 'Пишите контент' : 'Write the content', '/how/markdown'],
             ['BEMJSON', ru ? 'Описывайте блоки' : 'Describe the blocks', '/how/bemjson'],
-            ['nu', ru ? 'Задавайте разметку' : 'Define the markup', '/how/templates'],
+            ['nu.ts', ru ? 'Задавайте разметку' : 'Define the markup', '/how/templates'],
             ['HTML', ru ? 'Отдавайте файлы' : 'Serve the files', '/out/html'],
         ];
         const capabilities = ru ? [
@@ -44,8 +44,9 @@ export default function templates(): void {
         return el('div', 'home', [
             el('section', 'home-hero', [
                 el('h1', 'home-hero__title', [
-                    el('span', 'home-hero__in', ru ? 'Текст на входе.' : 'Text in.'),
-                    el('span', 'home-hero__out', ru ? 'Сайты на выходе.' : 'Sites out.'),
+                    el('span', 'home-hero__in', el('span', 'home-hero__line', ru ? 'Текст на входе.' : 'Text in.')),
+                    ' ',
+                    el('span', 'home-hero__out', el('span', 'home-hero__line', ru ? 'Сайты на выходе.' : 'Sites out.')),
                 ]),
                 el('div', 'home-hero__lower', [
                     el('div', 'home-hero__description', [
@@ -79,19 +80,20 @@ export default function templates(): void {
                     ]),
                 ]),
                 el('div', 'home-markdown', [
-                    el('div', 'home-markdown__formats', [el('span', '', '.md'), el('span', '', '.html')], { 'aria-hidden': 'true' }),
                     el('div', 'home-markdown__input', [
+                        el('p', 'home-markdown__format', '.md', { 'aria-hidden': 'true' }),
                         el('div', 'home-markdown__toolbar', [el('label', '', ru ? 'Ваш Markdown' : 'Your Markdown', { for: 'home-markdown-input' }), el('button', 'home-markdown__reset', ru ? 'Сбросить' : 'Reset', { type: 'button' })]),
                         el('textarea', '', example.markdown.source, { id: 'home-markdown-input', spellcheck: 'false', rows: '7', 'aria-describedby': 'home-markdown-hint' }),
                         el('p', 'home-note', ru ? 'Попробуйте заголовок с # в начале, а затем — абзац.' : 'Try a heading starting with #, then a paragraph.', { id: 'home-markdown-hint' }),
                     ]),
                     el('div', 'home-markdown__result', [
+                        el('p', 'home-markdown__format', '.html', { 'aria-hidden': 'true' }),
                         el('div', 'home-markdown__toolbar', [el('span', '', ru ? 'Что увидит читатель' : 'What the reader sees'), el('div', 'home-markdown__tabs', [
                             el('button', '', ru ? 'Страница' : 'Page', { type: 'button', role: 'tab', id: 'home-page-tab', 'aria-selected': 'true', 'aria-controls': 'home-page-panel', tabindex: '0' }),
                             el('button', '', 'HTML', { type: 'button', role: 'tab', id: 'home-html-tab', 'aria-selected': 'false', 'aria-controls': 'home-html-panel', tabindex: '-1' }),
                         ], { role: 'tablist', 'aria-label': ru ? 'Формат предпросмотра' : 'Preview format' })]),
                         el('div', '', el('iframe', '', null, { title: ru ? 'Предпросмотр страницы' : 'Page preview', sandbox: '', srcdoc: previewDocument(example.markdown.html, ru ? 'ru' : 'en') }), { id: 'home-page-panel', role: 'tabpanel', 'aria-labelledby': 'home-page-tab' }),
-                        el('div', '', el('pre', 'code-window__code', el('code', '', example.markdown.html, { id: 'home-markdown-html' })), { id: 'home-html-panel', role: 'tabpanel', 'aria-labelledby': 'home-html-tab', hidden: true }),
+                        el('div', '', el('pre', 'code code_wrap_soft code-window__code', el('code', '', example.markdown.html, { id: 'home-markdown-html' })), { id: 'home-html-panel', role: 'tabpanel', 'aria-labelledby': 'home-html-tab', hidden: true }),
                     ]),
                 ], { id: 'try' }),
                 link(demoUrl, [ru ? 'Открыть полное демо nuckty' : 'Explore the full nuckty demo', arrow()], 'home-text-link home-proof__more'),
@@ -121,21 +123,25 @@ export default function templates(): void {
                 el('div', 'home-table', el('table', '', [
                     el('caption', 'visually-hidden', ru ? 'Что вы задаёте и что создаёт сборка nuckty' : 'What you provide and what the nuckty build produces'),
                     el('thead', '', el('tr', '', [ru ? 'В вашем проекте' : 'In your project', ru ? 'Вы задаёте' : 'You provide', ru ? 'nuckty создаёт' : 'nuckty produces'].map((text) => el('th', '', text, { scope: 'col' })))),
-                    el('tbody', '', capabilities.map(([label, input, output]) => el('tr', '', [el('th', '', label ?? '', { scope: 'row' }), el('td', '', input ?? ''), el('td', '', output ?? '')]))),
-                ])),
+                    el('tbody', '', capabilities.map(([label, input, output]) => el('tr', '', [
+                        el('th', '', label ?? '', { scope: 'row' }),
+                        el('td', '', [el('span', 'home-table__label', ru ? 'Вы задаёте' : 'You provide', { 'aria-hidden': 'true' }), input ?? '']),
+                        el('td', '', [el('span', 'home-table__label', ru ? 'nuckty создаёт' : 'nuckty produces', { 'aria-hidden': 'true' }), output ?? '']),
+                    ]))),
+                ], { role: 'table' })),
                 el('div', 'home-boundary', [
                     el('h3', '', ru ? 'Статическая часть.' : 'The static part.'),
                     el('p', '', ru ? 'Для динамических данных, серверной авторизации или постоянного состояния приложения nuckty собирает статическую часть. CMS, серверный API и визуальный редактор находятся за пределами ядра. Блоки могут содержать клиентский JavaScript.' : 'For dynamic data, server authentication or persistent application state, nuckty builds the static part. A CMS, server API and visual editor are outside the core. Blocks can include client JavaScript.'),
-                    link(ru ? '/use-cases#для-каких-проектов-когда-понадобится-другой-инструмент' : '/use-cases#use-cases-when-another-tool-is-needed', ru ? 'Где подходит nuckty' : 'Where nuckty fits', 'home-text-link'),
+                    link(ru ? '/use-cases#для-каких-проектов-когда-понадобится-другой-инструмент' : '/use-cases#use-cases-when-another-tool-is-needed', ru ? 'Когда нужен другой инструмент' : 'When you need another tool', 'home-text-link'),
                 ]),
             ]),
             el('section', 'home-fit home-chapter', [
-                el('h2', '', lines(ru ? 'Дом' : 'A home for', ru ? 'для ваших слов.' : 'your words.')),
+                el('h2', '', ru ? 'Дом для ваших слов.' : 'A home for your words.'),
                 el('p', 'home-fit__description', ru ? 'nuckty подходит проектам, где контент хранится в файлах, а страницы можно собрать заранее. Документация, руководства и статьи используют один и тот же движок.' : 'nuckty fits projects where content lives in files and pages can be built ahead of time. Documentation, guides and articles use the same engine.'),
                 link('/use-cases', ru ? 'Где подходит nuckty' : 'Where nuckty fits', 'home-text-link'),
             ]),
             el('section', 'home-start home-chapter', [
-                el('h2', '', lines(ru ? 'Следующая страница' : 'The next page', ru ? 'за вами.' : 'is yours.')),
+                el('h2', '', ru ? 'Следующая страница за вами.' : 'The next page is yours.'),
                 el('div', 'home-start__actions', [
                     link('/how/start', [ru ? 'Открыть руководство' : 'Open the guide', arrow()], 'home-start__primary'),
                     link('/nuckty-starter.zip', ru ? 'Скачать стартовый проект' : 'Download starter', 'home-start__download'),

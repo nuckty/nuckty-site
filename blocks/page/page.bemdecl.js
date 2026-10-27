@@ -1,2 +1,1 @@
-module.exports = ['root', 'home', 'article', 'search', 'shell', 'card'];
-
+module.exports = ['root', 'code', 'home', 'article', 'search', 'shell', 'card'];
