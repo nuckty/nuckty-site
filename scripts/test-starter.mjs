@@ -7,6 +7,7 @@ import { execFileSync, spawn } from 'node:child_process';
 import { createServer } from 'node:net';
 
 const root = path.resolve(import.meta.dirname, '..');
+const versions = JSON.parse(readFileSync(path.join(root, 'config/config-packages.json'), 'utf8'));
 const temp = mkdtempSync(path.join(tmpdir(), 'nuckty starter proof '));
 const cache = process.env.NUCKTY_NPM_CACHE ?? path.join(root, '.cache/npm-starter');
 const extensions = process.argv.includes('--extensions');
@@ -86,7 +87,7 @@ try {
         execFileSync('python3', ['-c', 'import sys,zipfile; z=zipfile.ZipFile(sys.argv[1]); assert z.testzip() is None; assert all(n.startswith("nuckty-starter/") and ".." not in n.split("/") for n in z.namelist()); z.extractall(sys.argv[2])', path.join(root, `content/downloads/nuckty-starter-${language}.zip`), destination]);
         const consumer = path.join(destination, 'nuckty-starter');
         const manifest = JSON.parse(readFileSync(path.join(consumer, 'package.json'), 'utf8'));
-        assert.ok(Object.values(manifest.dependencies).every((value) => value === '1.0.0-beta1'));
+        assert.ok(Object.entries(manifest.dependencies).every(([name, value]) => value === versions[name]));
         assert.equal(existsSync(path.join(consumer, 'packages')), false, 'starter must install registry releases without bundled archives');
         const env = { ...process.env, npm_config_cache: cache, npm_config_registry: 'https://registry.npmjs.org' };
         execFileSync('npm', ['install', ...offline, '--no-audit', '--no-fund', '--registry=https://registry.npmjs.org', '--cache', cache], { cwd: consumer, env, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -99,7 +100,7 @@ try {
             assert.ok(!entry.link, `${location}: starter must not use local source links`);
 
             if (location.startsWith('node_modules/@nuckty/')) {
-                assert.equal(entry.version, '1.0.0-beta1');
+                assert.equal(entry.version, versions[location.slice('node_modules/'.length)]);
                 assert.ok(entry.resolved.startsWith('https://registry.npmjs.org/'));
                 assert.ok(entry.integrity);
             }

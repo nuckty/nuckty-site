@@ -46,3 +46,9 @@ MIT. Logo license: `blocks/brand/LICENSE`.
 The `CI` workflow installs package dependencies from the checked-in registry lockfile and checks out only canonical documentation at its latest successful CI commit. It verifies both languages and standalone npm-based starters before deploying approved main-branch artifacts. Public origins are nuckty.ru/nuckty.com and demo.nuckty.ru/demo.nuckty.com; `npm run build:preview` selects localhost links.
 
 Contact: vitaly@harisov.name.
+
+## Published package updates
+
+`.github/workflows/update-packages.yml` resolves the selected public npm `beta` or `latest` channel for the fixed official package set in `config/config-packages.json`. It rejects incompatible core peers, verifies a clean install and consumer acceptance, commits exact versions and lock integrity, then explicitly dispatches deployment CI; unchanged sets do not create commits. Package publication dispatches this workflow after registry verification.
+
+The selected deployment version map also renders official npm install commands from canonical documentation; prose and third-party examples retain the canonical source text. Starter archives use the same verified package map.

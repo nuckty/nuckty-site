@@ -2,9 +2,11 @@
 import { readFile, writeFile, mkdir, readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { searchDocument } from './search-document.mjs';
+import { packageExamples } from './package-examples.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const docs = path.resolve(root, '../nuckty-docs');
+const versions = JSON.parse(await readFile(path.join(root, 'config/config-packages.json'), 'utf8'));
 const destination = path.join(root, 'content/docs');
 const files = ['index.md', 'index.ru.md'];
 
@@ -41,7 +43,7 @@ const readingOrder = [
 const rank = new Map(readingOrder.map((route, index) => [route, index]));
 
 for (const file of files.sort()) {
-    const text = await readFile(path.join(docs, file), 'utf8');
+    const text = packageExamples(await readFile(path.join(docs, file), 'utf8'), versions);
     await mkdir(path.dirname(path.join(destination, file)), { recursive: true });
     await writeFile(path.join(destination, file), text);
     const language = file.endsWith('.ru.md') ? 'ru' : 'en';
