@@ -1,4 +1,6 @@
-const ru = document.documentElement.lang === 'ru';
+import { messages } from './shell.i18n/index.js';
+const locale = document.documentElement.lang;
+const t = messages(locale);
 const themeButton = document.querySelector('.theme-toggle');
 
 const languageLinks = [...document.querySelectorAll('.language-link, .header__language')];
@@ -12,7 +14,8 @@ if (incomingTheme === 'dark' || incomingTheme === 'light') {
 }
 
 try {
-    const theme = incomingTheme === 'dark' || incomingTheme === 'light' ? incomingTheme : localStorage.getItem('nuckty-theme');
+    const theme =
+        incomingTheme === 'dark' || incomingTheme === 'light' ? incomingTheme : localStorage.getItem('nuckty-theme');
 
     if (theme === 'dark' || theme === 'light') {
         document.documentElement.dataset.theme = theme;
@@ -32,7 +35,7 @@ function updateThemeControl() {
     }
 
     themeButton?.setAttribute('aria-pressed', String(dark));
-    themeButton?.setAttribute('title', dark ? (ru ? 'Включить светлую тему' : 'Use light theme') : (ru ? 'Включить тёмную тему' : 'Use dark theme'));
+    themeButton?.setAttribute('title', dark ? t['Use light theme'] : t['Use dark theme']);
 }
 
 updateThemeControl();
@@ -65,13 +68,19 @@ const headerSize = new ResizeObserver(() => {
     for (const pre of document.querySelectorAll('.article > pre, .article > .code-block > pre')) {
         const frame = pre.closest('.code-block') ?? pre;
         const edgeToEdge = matchMedia('(max-width: 47.999rem)').matches;
-        frame.style.setProperty('--code-offset', `${edgeToEdge ? frame.parentElement.getBoundingClientRect().left : 0}px`);
+        frame.style.setProperty(
+            '--code-offset',
+            `${edgeToEdge ? frame.parentElement.getBoundingClientRect().left : 0}px`,
+        );
         frame.style.setProperty('--code-width', edgeToEdge ? `${document.documentElement.clientWidth}px` : '100%');
     }
 
     for (const navigation of document.querySelectorAll('.page-navigation')) {
         const edgeToEdge = matchMedia('(max-width: 47.999rem)').matches;
-        navigation.style.setProperty('--navigation-offset', `${edgeToEdge ? navigation.getBoundingClientRect().left : 0}px`);
+        navigation.style.setProperty(
+            '--navigation-offset',
+            `${edgeToEdge ? navigation.getBoundingClientRect().left : 0}px`,
+        );
         const width = edgeToEdge ? document.documentElement.clientWidth : navigation.getBoundingClientRect().width;
         navigation.style.setProperty('--navigation-width', `${width}px`);
         const height = navigation.getBoundingClientRect().height;
@@ -104,15 +113,15 @@ for (const pre of document.querySelectorAll('pre')) {
     path.setAttribute('d', copyPath);
     icon.append(path);
     button.replaceChildren(icon);
-    button.setAttribute('aria-label', ru ? 'Скопировать пример кода' : 'Copy code example');
+    button.setAttribute('aria-label', t['Copy code example']);
     button.title = button.getAttribute('aria-label');
     button.addEventListener('click', async () => {
         try {
             await navigator.clipboard.writeText(code.textContent);
             path.setAttribute('d', 'm5 12 4 4L19 6');
-            button.title = ru ? 'Скопировано' : 'Copied';
+            button.title = t['Copied'];
         } catch {
-            button.title = ru ? 'Выделите текст' : 'Select the text';
+            button.title = t['Select the text'];
         }
 
         setTimeout(() => {

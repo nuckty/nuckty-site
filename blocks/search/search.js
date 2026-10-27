@@ -1,3 +1,4 @@
+import { messages } from './search.i18n/index.js';
 const header = document.querySelector('.header');
 const panel = document.querySelector('#site-search');
 const input = document.querySelector('#search-input');
@@ -12,7 +13,8 @@ const closeButton = document.querySelector('.search-close');
 const searchButton = document.querySelector('.search-trigger');
 const menuButton = document.querySelector('.menu-toggle');
 const mobile = matchMedia('(max-width: 1024px)');
-const ru = document.documentElement.lang === 'ru';
+const locale = document.documentElement.lang;
+const t = messages(locale);
 let opener;
 let engine;
 let database;
@@ -45,9 +47,9 @@ async function loadCorpus() {
         loaded += value.byteLength;
 
         if (total > 0) {
-            const percentage = Math.min(100, Math.floor(loaded / total * 100));
+            const percentage = Math.min(100, Math.floor((loaded / total) * 100));
             progress.value = percentage;
-            loadingLabel.textContent = `${ru ? 'Загрузка поиска' : 'Loading search'} · ${percentage}%`;
+            loadingLabel.textContent = `${t['Loading search']} · ${percentage}%`;
         }
     }
 
@@ -71,14 +73,16 @@ function prepareSearch() {
     hint.hidden = true;
     hint.dataset.state = 'loading';
     progress.removeAttribute('value');
-    loadingLabel.textContent = ru ? 'Загрузка поиска…' : 'Loading search…';
+    loadingLabel.textContent = t['Loading search…'];
     pendingIndex = (async () => {
         engine = await import(panel.dataset.engineUrl);
         const pages = await loadCorpus();
         progress.removeAttribute('value');
-        loadingLabel.textContent = ru ? 'Подготовка поиска…' : 'Preparing search…';
-        await new Promise((resolve) => { setTimeout(resolve, 0); });
-        database = engine.createSearch(pages, ru ? 'ru' : 'en');
+        loadingLabel.textContent = t['Preparing search…'];
+        await new Promise((resolve) => {
+            setTimeout(resolve, 0);
+        });
+        database = engine.createSearch(pages, locale);
         loading.hidden = true;
         hint.hidden = false;
         hint.dataset.state = 'ready';
@@ -89,7 +93,7 @@ function prepareSearch() {
         loading.hidden = true;
         hint.hidden = false;
         hint.dataset.state = 'error';
-        hint.textContent = ru ? 'Не удалось загрузить поиск. Закройте его и попробуйте ещё раз.' : 'Search could not be loaded. Close it and try again.';
+        hint.textContent = t['Search could not be loaded. Close it and try again.'];
     });
 
     return pendingIndex;
@@ -127,7 +131,7 @@ function search() {
 
     if (!hits.length) {
         const message = document.createElement('p');
-        message.textContent = ru ? 'Ничего не найдено. Попробуйте другой термин.' : 'No results. Try another term.';
+        message.textContent = t['No results. Try another term.'];
         results.append(message);
     }
 
@@ -151,8 +155,6 @@ function setOpen(open) {
     document.body.toggleAttribute('data-search-open', open);
     searchButton.setAttribute('aria-expanded', String(open));
     menuButton.setAttribute('aria-expanded', String(open));
-
-
 }
 
 function openSearch(clearQuery = false) {
@@ -166,7 +168,7 @@ function openSearch(clearQuery = false) {
     }
 
     setOpen(true);
-    closeButton.setAttribute('aria-label', mobile.matches ? (ru ? 'Закрыть меню' : 'Close menu') : (ru ? 'Закрыть поиск' : 'Close search'));
+    closeButton.setAttribute('aria-label', mobile.matches ? t['Close menu'] : t['Close search']);
     search();
 
     input.focus();
@@ -178,13 +180,22 @@ function closeSearch(restoreFocus = true) {
     setOpen(false);
 
     if (restoreFocus) {
-        const control = opener?.tabIndex >= 0 && opener.getClientRects().length ? opener : (mobile.matches ? menuButton : searchButton);
+        const control =
+            opener?.tabIndex >= 0 && opener.getClientRects().length
+                ? opener
+                : mobile.matches
+                  ? menuButton
+                  : searchButton;
         control.focus();
     }
 }
 
-searchButton.addEventListener('click', () => { openSearch(); });
-closeButton.addEventListener('click', () => { closeSearch(); });
+searchButton.addEventListener('click', () => {
+    openSearch();
+});
+closeButton.addEventListener('click', () => {
+    closeSearch();
+});
 
 for (const button of [menuButton]) {
     button.addEventListener('click', () => {
@@ -228,7 +239,12 @@ document.addEventListener('keydown', (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         openSearch();
-    } else if (event.key === 'Escape' && !event.defaultPrevented && !panel.hidden && !document.querySelector('dialog[open]')) {
+    } else if (
+        event.key === 'Escape' &&
+        !event.defaultPrevented &&
+        !panel.hidden &&
+        !document.querySelector('dialog[open]')
+    ) {
         event.preventDefault();
         closeSearch();
     }
@@ -243,7 +259,14 @@ document.querySelector('.sidebar__fallback')?.setAttribute('hidden', '');
 header.setAttribute('data-navigation-ready', '');
 
 if ('requestIdleCallback' in window) {
-    requestIdleCallback(() => { void prepareSearch(); }, { timeout: 1500 });
+    requestIdleCallback(
+        () => {
+            void prepareSearch();
+        },
+        { timeout: 1500 },
+    );
 } else {
-    setTimeout(() => { void prepareSearch(); }, 0);
+    setTimeout(() => {
+        void prepareSearch();
+    }, 0);
 }

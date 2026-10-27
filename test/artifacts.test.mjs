@@ -105,14 +105,14 @@ for (const target of targets) {
             assert.match(pages.get('/how/start').html, new RegExp(`hreflang=${other}`));
             assert.ok(pages.get('/how/start').tags.some(({ attrs }) => attrs.class === 'page-navigation__link' && attrs.href === '/how/bemjson'), 'start guide must continue to the data model');
             const home = pages.get('/').html;
-            const panelCode = (id) => decode(home.slice(home.indexOf(`id=${id}`)).match(/<code>([\s\S]*?)<\/code>/)[1].replace(/<\/?span[^>]*>/g, ''));
+            const panelCode = (id) => decode(home.slice(home.indexOf(`id=${id}`)).match(/<code\b[^>]*>([\s\S]*?)<\/code>/)[1].replace(/<\/?span[^>]*>/g, ''));
             assert.equal(panelCode('home-nu-panel'), await readFile(path.join(root, 'blocks/card/card.nu.ts'), 'utf8'), 'template source must be the actual block file');
             assert.equal(JSON.parse(panelCode('home-bemjson-panel')).block, 'card');
             assert.match(home, /sandbox=""/);
             assert.match(home, /home-markdown-html/);
             assert.match(home, /class="code code_wrap_soft code-window__code"/);
             assert.doesNotMatch(home, /site-wordmark/);
-            assert.match(home, /class=home-route__name>nu\.ts</);
+            assert.match(home, /class=home__route-name>nu\.ts</);
             assert.equal((home.match(/Где подходит nuckty|Where nuckty fits/g) ?? []).length, 1);
             assert.equal(homePage.tags.filter(({ tag, attrs }) => tag.startsWith('<th') && attrs.scope === 'row').length, 7);
             assert.doesNotMatch(home, /ГЕНЕРАТОР СТАТИЧЕСКИХ САЙТОВ|STATIC SITE GENERATOR/);

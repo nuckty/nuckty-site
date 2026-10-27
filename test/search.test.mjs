@@ -22,7 +22,7 @@ for (const language of ['ru', 'en']) {
         const bytes = Number(html.match(/data-index-bytes=(\d+)/)[1]);
         const index = await readFile(new URL(`../site/${language}/search-index.txt`, import.meta.url));
         assert.equal(bytes, index.length);
-        const baseUrl = html.match(/<script\s+src=([^\s>]+)/)[1];
+        const baseUrl = html.match(/<script\b[^>]*\bsrc=([^\s>]+)/)[1];
         assert.notEqual(engineUrl, baseUrl);
         const artifactUrl = new URL(`../site/${language}/js/${engineUrl.slice(1)}`, import.meta.url);
         const engine = await import(artifactUrl.href);

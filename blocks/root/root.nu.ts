@@ -1,168 +1,532 @@
+import { messages } from './root.i18n/index.js';
+import { b, attributes } from '../bem/bem.js';
 import { block, type BEMTree, type BemNode, type DocumentData } from '@nuckty/core';
 
-const element = (tag: string, cls: string, content: BEMTree, attrs: BemNode['attrs'] = {}): BemNode => ({ tag, cls, content, attrs, bem: false });
-const link = (href: string, text: BEMTree, cls = '', active = false): BemNode => element(active ? 'span' : 'a', cls, text, { ...(active ? { 'aria-current': 'page' } : { href }) });
-const mapLink = (href: string, text: string, cls = '', active = false): BemNode => link(href, element('span', 'site-map__text', text), cls, active);
-const icon = (cls: string, content: BEMTree): BemNode => element('svg', cls, content, { viewBox: '0 0 24 24', width: '20', height: '20', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.6', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true', focusable: 'false' });
+function documentTree(
+    node: Omit<BemNode, 'props'> & {
+        props?: DocumentData;
+    },
+): BemNode {
+    const data = node.props;
+    if (!data) {
+        throw new Error('Website root requires document data');
+    }
+    const locale = data.lang;
+    const t = messages(locale);
+    const demo = data.target?.data?.['kind'] === 'demo';
+    const landing = data.page.layout === 'landing';
+    const url = data.page.url;
+    const title = `${data.page.name}${url === '/' ? '' : ' · nuckty'}`;
+    const origin = demo ? 'https://demo.nuckty.ru' : `https://${data.target?.host ?? 'nuckty.ru'}`;
+    const description =
+        t[
+            'A static site generator with Markdown, BEMJSON templates, extensions and build artifacts for nginx and Apache.'
+        ];
+    const brand = data.assets.images['brand/brand.svg'];
+    const brandDark = data.assets.images['brand/brand-dark.svg'];
+    const favicon = data.assets.images['brand/favicon.svg'];
+    const logo = b(
+        'brand',
+        undefined,
+        [
+            ...(brand ? [b('brand', 'mark', null, { src: `/${brand}` }, { elemMods: { light: true } })] : []),
+            ...(brandDark ? [b('brand', 'mark', null, { src: `/${brandDark}` }, { elemMods: { dark: true } })] : []),
+            b('brand', 'name', demo ? 'nuckty demo' : 'nuckty'),
+        ],
+        {
+            ...{ ...(url === '/' ? {} : { href: '/', 'aria-label': demo ? t['nuckty demo home'] : t['nuckty home'] }) },
+            linked: url === '/' ? false : true,
+        },
+    );
+    const siteUrl = String(data.target?.data?.['siteUrl'] ?? 'http://localhost:8091');
+    const demoUrl = String(data.target?.data?.['demoUrl'] ?? 'http://localhost:8092');
+    const navigation: BEMTree = demo
+        ? [
+              b('root', 'link', 'Возможности', { href: '/', active: url === '/' }),
+              b('root', 'link', 'Markdown', { href: '/markdown', active: url === '/markdown' }),
+              b('root', 'link', 'Галерея и сетка', { href: '/media', active: url === '/media' }),
+              b('root', 'link', 'Редактор', { href: '/playground', active: url === '/playground' }),
+              b('root', 'link', 'Файлы', { href: '/output', active: url === '/output' }),
+              b('root', 'link', 'О nuckty ↗', { href: siteUrl, active: false }),
+          ]
+        : [
+              b('root', 'link', t['Use cases'], { href: '/use-cases', active: url === '/use-cases' }),
+              b('root', 'link', t['Get started'], { href: '/how/start', active: url === '/how/start' }),
+              b('root', 'link', t['Docs'], {
+                  href: '/docs',
+                  active: url !== '/' && url !== '/use-cases' && url !== '/how/start',
+              }),
+              b('root', 'link', t['Demo ↗'], { href: demoUrl, active: false }),
+          ];
+    const alternateUrl = `${data.target?.data?.['alternateOrigin'] ?? t['https://nuckty.ru']}${url}`;
+    const pages = Object.values(data.sitemap.pages).filter((page) => page.url !== '/' && page.url !== '/use-cases');
+    const groups = demo
+        ? [['', 'Примеры']]
+        : [
+              ['/docs', t['Overview']],
+              ['/how', t['How to use it']],
+              ['/out', t['Build output']],
+              ['/ext', t['Extensions']],
+              ['/why', t['Why this way']],
+          ];
+    const search = !demo
+        ? b(
+              'header-search',
+              undefined,
+              [
+                  b('header-search', 'bar', [
+                      b('root', 'input-label', t['Search this site'], {}, { mix: [{ block: 'visually-hidden' }] }),
+                      b('header-search', 'input', null, {
+                          placeholder: t['Search this site…'],
+                      }),
+                      b(
+                          'icon-button',
+                          undefined,
+                          b('control-icon', undefined, b('root', 'arrow-path', null, { d: 'm6 6 12 12M6 18 18 6' })),
+                          { 'aria-label': t['Close search'] },
+                          { mix: [{ block: 'search-close' }] },
+                      ),
+                  ]),
+                  b('header-search', 'panel', [
+                      b('search-loading', undefined, [
+                          b('search-loading', 'label', t['Loading search…']),
+                          b('search-loading', 'progress', '', {
+                              'aria-label': t['Loading the search index'],
+                          }),
+                      ]),
+                      b('search-hint', undefined, t['Search a title, concept or command.']),
+                      b('search-results', undefined),
+                      b(
+                          'site-map',
+                          undefined,
+                          [
+                              b('site-map', 'group', [
+                                  b(
+                                      'site-map',
+                                      'heading',
+                                      b('site-map', 'title', b('site-map', 'text', t['About nuckty']), {
+                                          href: '/',
+                                          active: url === '/',
+                                      }),
+                                  ),
+                                  b('site-map', 'links', [
+                                      b('site-map', 'link', b('site-map', 'text', t['Use cases']), {
+                                          href: '/use-cases',
+                                          active: url === '/use-cases',
+                                      }),
+                                      b('site-map', 'link', b('site-map', 'text', t['Documentation']), {
+                                          href: '/docs',
+                                          active: url === '/docs',
+                                      }),
+                                      b('site-map', 'link', b('site-map', 'text', t['Demo']), {
+                                          href: demoUrl,
+                                          active: false,
+                                      }),
+                                  ]),
+                              ]),
+                              ...groups
+                                  .filter(([prefix]) => prefix !== '/docs')
+                                  .map(([prefix, label]) =>
+                                      b('site-map', 'group', [
+                                          b(
+                                              'site-map',
+                                              'heading',
+                                              b(
+                                                  'site-map',
+                                                  'title',
+                                                  b('site-map', 'text', prefix === '/how' ? t['Guide'] : (label ?? '')),
+                                                  { href: prefix ?? '', active: prefix === url },
+                                              ),
+                                          ),
+                                          b(
+                                              'site-map',
+                                              'links',
+                                              pages
+                                                  .filter(
+                                                      (page) =>
+                                                          page.url !== prefix && page.url.startsWith(`${prefix}/`),
+                                                  )
+                                                  .map((page) =>
+                                                      b(
+                                                          'site-map',
+                                                          'link',
+                                                          b('site-map', 'text', page.name),
+                                                          { href: page.url, active: page.url === url },
+                                                          {
+                                                              ...{},
+                                                              elemMods: {
+                                                                  nested: page.url.split('/').length > 3,
+                                                              },
+                                                          },
+                                                      ),
+                                                  ),
+                                          ),
+                                      ]),
+                                  ),
+                          ],
+                          { 'aria-label': t['Site map'] },
+                      ),
+                  ]),
+              ],
+              {
+                  'aria-label': t['Search and navigation'],
+                  'data-index-bytes': String(data.page['searchIndexBytes'] ?? ''),
+                  'data-engine-url': String(data.page['searchEngineUrl'] ?? ''),
+              },
+          )
+        : null;
+    const header = b('header', undefined, [
+        logo,
+        b('header', 'nav', navigation, { 'aria-label': t['Main navigation'] }),
+        b('header', 'tools', [
+            ...(!demo ? [b('language-link', undefined, t['RU'], { href: alternateUrl, active: false })] : []),
+            b(
+                'icon-button',
+                undefined,
+                [
+                    b(
+                        'control-icon',
+                        undefined,
+                        b('root', 'arrow-path', null, {
+                            d: 'M20.6 13.5A8.5 8.5 0 0 1 10.5 3.4a8.5 8.5 0 1 0 10.1 10.1Z',
+                        }),
+                        {},
+                        { mix: [{ block: 'theme-toggle', elem: 'moon' }] },
+                    ),
+                    b(
+                        'control-icon',
+                        undefined,
+                        [
+                            b('root', 'arrow-path', null, { d: 'M16 12a4 4 0 1 1 -8 0a4 4 0 0 1 8 0Z' }),
+                            b('root', 'arrow-path', null, {
+                                d: 'M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
+                            }),
+                        ],
+                        {},
+                        { mix: [{ block: 'theme-toggle', elem: 'sun' }] },
+                    ),
+                ],
+                { 'aria-label': t['Dark theme'], hidden: true },
+                { mix: [{ block: 'theme-toggle' }] },
+            ),
+            ...(!demo
+                ? [
+                      b(
+                          'icon-button',
+                          undefined,
+                          [
+                              b(
+                                  'control-icon',
+                                  undefined,
+                                  [
+                                      b('root', 'arrow-path', null, {
+                                          d: 'M17 10.5a6.5 6.5 0 1 1 -13 0a6.5 6.5 0 0 1 13 0Z',
+                                      }),
+                                      b('root', 'arrow-path', null, { d: 'm16 16 5 5' }),
+                                  ],
+                                  {},
+                                  { mix: [{ block: 'search-trigger', elem: 'icon' }] },
+                              ),
+                              b('search-trigger', 'label', t['Search']),
+                          ],
+                          {
+                              'aria-label': t['Search'],
+                              'aria-controls': 'site-search',
+                              'aria-expanded': 'false',
+                              hidden: true,
+                          },
+                          { mix: [{ block: 'search-trigger' }] },
+                      ),
+                  ]
+                : []),
+            b(
+                'icon-button',
+                undefined,
+                b('menu-toggle', 'line', ''),
+                {
+                    'aria-label': t['Menu'],
+                    'aria-controls': demo ? 'main-nav' : 'site-search',
+                    'aria-expanded': 'false',
+                    hidden: true,
+                },
+                { mix: [{ block: 'menu-toggle' }] },
+            ),
+        ]),
+        search,
+    ]);
+    const sidebar = b(
+        'sidebar',
+        undefined,
+        [
+            b(
+                'sidebar',
+                'sections',
+                groups.map(([prefix, label]) =>
+                    b('sidebar', 'group', [
+                        b('sidebar', 'label', label ?? ''),
+                        ...pages
+                            .filter((page) => page.url === prefix || page.url.startsWith(`${prefix}/`))
+                            .map((page) =>
+                                b(
+                                    'sidebar',
+                                    'link',
+                                    page.name,
+                                    { href: page.url, active: page.url === url },
+                                    { ...{}, elemMods: { nested: page.url.split('/').length > 3 } },
+                                ),
+                            ),
+                    ]),
+                ),
+                { 'aria-label': t['Documentation sections'] },
+            ),
+        ],
+        { 'aria-label': t['Sections'] },
+    );
+    const index = pages.findIndex((page) => page.url === url);
+    const neighbors = [pages[index - 1], pages[index + 1]];
+    const main: BemNode = landing
+        ? b(
+              'main',
+              undefined,
+              demo
+                  ? data.content
+                  : { block: 'home', props: { lang: data.lang, demoUrl, example: data.page['homeExample'] } },
+              {},
+              { mods: { landing: true } },
+          )
+        : b(
+              'main',
+              undefined,
+              [
+                  b('reading-nav', undefined, [
+                      b(
+                          'breadcrumbs',
+                          undefined,
+                          b(
+                              'breadcrumbs',
+                              'list',
+                              [
+                                  b('root', 'link', demo ? 'Демо' : 'nuckty', { href: '/', active: false }),
+                                  ...data.page.breadcrumbs
+                                      .filter((route) => route !== url && Boolean(data.sitemap.pages[route]))
+                                      .map((route) =>
+                                          b('root', 'link', data.sitemap.pages[route]!.name, {
+                                              href: route,
+                                              active: false,
+                                          }),
+                                      ),
+                              ].map((item, i) =>
+                                  b('breadcrumbs', 'item', [...(i ? [b('breadcrumbs', 'separator', '/')] : []), item]),
+                              ),
+                          ),
+                          { 'aria-label': t['Breadcrumb'] },
+                      ),
+                      b('sidebar', 'fallback', demo ? 'Все примеры →' : t['All sections →'], {
+                          href: demo ? '/' : '/docs',
+                          active: url === (demo ? '/' : '/docs'),
+                      }),
+                  ]),
+                  sidebar,
+                  b('article-column', undefined, [
+                      b('article', undefined, data.content),
+                      b(
+                          'page-navigation',
+                          undefined,
+                          neighbors.map((page, i) =>
+                              page
+                                  ? b(
+                                        'page-navigation',
+                                        'link',
+                                        b('page-navigation', 'name', [b('page-navigation', 'text', page.name)]),
+                                        {
+                                            href: page.url,
+                                            rel: i === 0 ? 'prev' : 'next',
+                                            'data-direction': i === 0 ? 'previous' : 'next',
+                                            'aria-label': `${i === 0 ? t['Previous page'] : t['Next page']}: ${page.name}`,
+                                        },
+                                    )
+                                  : null,
+                          ),
+                          { 'aria-label': t['Neighboring pages'] },
+                      ),
+                  ]),
+              ],
+              {},
+              { mix: [{ block: 'docs-layout' }] },
+          );
+    const footer = b(
+        'footer',
+        undefined,
+        [
+            b('footer', 'identity', [
+                b(
+                    'footer',
+                    'brand',
+                    [
+                        ...(brand
+                            ? [
+                                  b(
+                                      'footer',
+                                      'mark',
+                                      null,
+                                      { src: `/${brand}` },
+                                      { mix: [{ block: 'brand', elem: 'mark', elemMods: { light: true } }] },
+                                  ),
+                              ]
+                            : []),
+                        ...(brandDark
+                            ? [
+                                  b(
+                                      'footer',
+                                      'mark',
+                                      null,
+                                      { src: `/${brandDark}` },
+                                      { mix: [{ block: 'brand', elem: 'mark', elemMods: { dark: true } }] },
+                                  ),
+                              ]
+                            : []),
+                        b('root', 'name', 'nuckty'),
+                    ],
+                    {
+                        ...{
+                            ...(url === '/' ? {} : { href: demo ? siteUrl : '/', 'aria-label': t['nuckty home'] }),
+                        },
+                        linked: url === '/' ? false : true,
+                    },
+                ),
+                b('footer', 'caption', [
+                    b('footer', 'made', t['Made with nuckty.']),
+                    b('root', 'break'),
+                    t['Of course'],
+                ]),
+            ]),
+            b(
+                'footer',
+                'links',
+                [
+                    b('root', 'link', 'GitHub', { href: 'https://github.com/nuckty/nuckty', active: false }),
+                    ...(!demo
+                        ? [
+                              b('source-link', undefined, t['Page source'], {
+                                  href: data.page.file.startsWith('docs/')
+                                      ? `https://github.com/nuckty/nuckty-docs/blob/main/${data.page.file.slice(5)}`
+                                      : `https://github.com/nuckty/nuckty-site/blob/main/${landing ? 'blocks/home/home.nu.ts' : `content/${data.page.file}`}`,
+                                  'aria-label': t['Page source on GitHub'],
+                              }),
+                          ]
+                        : []),
+                    b('footer', 'license', 'MIT'),
+                ],
+                { 'aria-label': t['More links'] },
+            ),
+        ],
+        {},
+        { ...{}, mods: { website: !demo } },
+    );
+    const head: BEMTree = [
+        b('root', 'meta', null, { charset: 'utf-8' }),
+        b('root', 'title', title),
+        b('root', 'meta', null, { name: 'viewport', content: 'width=device-width,initial-scale=1' }),
+        b('root', 'meta', null, { name: 'description', content: description }),
+        b('root', 'meta', null, { name: 'color-scheme', content: 'light dark' }),
+        b('root', 'meta', null, { name: 'theme-color', content: '#f7f9fa' }),
+        b('root', 'resource', null, { rel: 'canonical', href: `${origin}${url}` }),
+        b('root', 'meta', null, { property: 'og:title', content: title }),
+        b('root', 'meta', null, { property: 'og:description', content: description }),
+        b('root', 'meta', null, { property: 'og:type', content: 'website' }),
+        b('root', 'meta', null, { property: 'og:url', content: `${origin}${url}` }),
+        ...(favicon ? [b('root', 'resource', null, { rel: 'icon', type: 'image/svg+xml', href: `/${favicon}` })] : []),
+        ...Object.values(data.assets.css)
+            .filter((asset) => asset.hash !== 'empty')
+            .map((asset) => b('root', 'resource', null, { rel: 'stylesheet', href: asset.url })),
+        ...[...data.alternates].map(([lang, alternate]) =>
+            b('root', 'resource', null, { rel: 'alternate', hreflang: lang, href: alternate.url }),
+        ),
+    ];
+    return b(
+        'root',
+        'html',
+        [
+            b('root', 'head', head),
+            b('root', 'body', [
+                b('skip-link', undefined, t['Skip to content'], { active: false }),
+                header,
+                main,
+                footer,
+                ...Object.values(data.assets.js)
+                    .filter((asset) => asset.hash !== 'empty')
+                    .map((asset) => b('root', 'script', '', { src: asset.url })),
+            ]),
+        ],
+        {
+            lang: data.lang ?? 'ru',
+            'data-site': demo ? 'demo' : 'website',
+            ...(landing && !demo ? { 'data-page': 'home' } : {}),
+        },
+    );
+}
 
 export default function templates(): void {
-    block<DocumentData>('root').when((node) => Boolean(node.props)).wrap((node) => {
-        const data = node.props;
-
-        if (!data) {
-            throw new Error('Website root requires document data');
-        }
-
-        const ru = data.lang === 'ru';
-        const demo = data.target?.data?.['kind'] === 'demo';
-        const landing = data.page.layout === 'landing';
-        const url = data.page.url;
-        const title = `${data.page.name}${url === '/' ? '' : ' · nuckty'}`;
-        const origin = demo ? 'https://demo.nuckty.ru' : `https://${data.target?.host ?? 'nuckty.ru'}`;
-        const description = ru ? 'Генератор статических сайтов: Markdown, шаблоны BEMJSON, расширения и готовый артефакт для nginx и Apache.' : 'A static site generator with Markdown, BEMJSON templates, extensions and build artifacts for nginx and Apache.';
-        const brand = data.assets.images['brand/brand.svg'];
-        const brandDark = data.assets.images['brand/brand-dark.svg'];
-        const favicon = data.assets.images['brand/favicon.svg'];
-        const logo = element(url === '/' ? 'span' : 'a', 'brand', [
-            ...(brand ? [element('img', 'brand__mark brand__mark_light', null, { src: `/${brand}`, alt: '', width: '62', height: '44' })] : []),
-            ...(brandDark ? [element('img', 'brand__mark brand__mark_dark', null, { src: `/${brandDark}`, alt: '', width: '62', height: '44' })] : []),
-            element('span', 'brand__name', demo ? 'nuckty demo' : 'nuckty'),
-        ], { ...(url === '/' ? {} : { href: '/', 'aria-label': demo ? (ru ? 'nuckty demo — главная' : 'nuckty demo home') : (ru ? 'nuckty — главная' : 'nuckty home') }) });
-        const siteUrl = String(data.target?.data?.['siteUrl'] ?? 'http://localhost:8091');
-        const demoUrl = String(data.target?.data?.['demoUrl'] ?? 'http://localhost:8092');
-        const navigation: BEMTree = demo ? [
-            link('/', 'Возможности', '', url === '/'),
-            link('/markdown', 'Markdown', '', url === '/markdown'),
-            link('/media', 'Галерея и сетка', '', url === '/media'),
-            link('/playground', 'Редактор', '', url === '/playground'),
-            link('/output', 'Файлы', '', url === '/output'),
-            link(siteUrl, 'О nuckty ↗'),
-        ] : [
-            link('/use-cases', ru ? 'Применение' : 'Use cases', '', url === '/use-cases'),
-            link('/how/start', ru ? 'Руководство' : 'Get started', '', url === '/how/start'),
-            link('/docs', ru ? 'Документация' : 'Docs', '', url !== '/' && url !== '/use-cases' && url !== '/how/start'),
-            link(demoUrl, ru ? 'Демо ↗' : 'Demo ↗'),
-        ];
-        const alternateUrl = `${data.target?.data?.['alternateOrigin'] ?? (ru ? 'https://nuckty.com' : 'https://nuckty.ru')}${url}`;
-        const pages = Object.values(data.sitemap.pages).filter((page) => page.url !== '/' && page.url !== '/use-cases');
-        const groups = demo ? [['', 'Примеры']] : [
-            ['/docs', ru ? 'Обзор' : 'Overview'],
-            ['/how', ru ? 'Как пользоваться' : 'How to use it'],
-            ['/out', ru ? 'Результат сборки' : 'Build output'],
-            ['/ext', ru ? 'Расширения' : 'Extensions'],
-            ['/why', ru ? 'Почему так' : 'Why this way'],
-        ];
-        const search = !demo ? element('div', 'header-search', [
-            element('div', 'header-search__bar', [
-                element('label', 'visually-hidden', ru ? 'Поиск по сайту' : 'Search this site', { for: 'search-input' }),
-                element('input', 'header-search__input', null, { id: 'search-input', type: 'search', placeholder: ru ? 'Поиск по сайту…' : 'Search this site…', autocomplete: 'off' }),
-                element('button', 'icon-button search-close', icon('control-icon', element('path', '', null, { d: 'm6 6 12 12M6 18 18 6' })), { type: 'button', 'aria-label': ru ? 'Закрыть поиск' : 'Close search' }),
-            ]),
-            element('div', 'header-search__panel', [
-                element('div', 'search-loading', [
-                    element('span', 'search-loading__label', ru ? 'Загрузка поиска…' : 'Loading search…'),
-                    element('progress', 'search-loading__progress', '', { max: '100', 'aria-label': ru ? 'Загрузка поискового индекса' : 'Loading the search index' }),
-                ], { hidden: true, role: 'status' }),
-                element('p', 'search-hint', ru ? 'Название, термин или команда.' : 'Search a title, concept or command.', { role: 'status' }),
-                element('div', 'search-results', null, { 'aria-live': 'polite' }),
-                element('nav', 'site-map', [
-                    element('section', 'site-map__group', [
-                        element('h2', 'site-map__heading', mapLink('/', ru ? 'О nuckty' : 'About nuckty', 'site-map__title', url === '/')),
-                        element('div', 'site-map__links', [
-                            mapLink('/use-cases', ru ? 'Применение' : 'Use cases', 'site-map__link', url === '/use-cases'),
-                            mapLink('/docs', ru ? 'Документация' : 'Documentation', 'site-map__link', url === '/docs'),
-                            mapLink(demoUrl, ru ? 'Демо' : 'Demo', 'site-map__link'),
-                        ]),
-                    ]),
-                    ...groups.filter(([prefix]) => prefix !== '/docs').map(([prefix, label]) => element('section', 'site-map__group', [
-                        element('h2', 'site-map__heading', mapLink(prefix ?? '', prefix === '/how' ? (ru ? 'Руководство' : 'Guide') : (label ?? ''), 'site-map__title', prefix === url)),
-                        element('div', 'site-map__links', pages.filter((page) => page.url !== prefix && page.url.startsWith(`${prefix}/`)).map((page) => mapLink(page.url, page.name, `site-map__link${page.url.split('/').length > 3 ? ' site-map__link_nested' : ''}`, page.url === url))),
-                    ])),
-                ], { 'aria-label': ru ? 'Карта сайта' : 'Site map' }),
-            ]),
-        ], { id: 'site-search', role: 'search', 'aria-label': ru ? 'Поиск и навигация' : 'Search and navigation', 'data-index-bytes': String(data.page['searchIndexBytes'] ?? ''), 'data-engine-url': String(data.page['searchEngineUrl'] ?? ''), hidden: true }) : null;
-        const header = element('header', 'header', [
-            logo,
-            element('nav', 'header__nav', navigation, { id: 'main-nav', 'aria-label': ru ? 'Основная навигация' : 'Main navigation' }),
-            element('div', 'header__tools', [
-                ...(!demo ? [link(alternateUrl, ru ? 'EN' : 'RU', 'language-link')] : []),
-                element('button', 'icon-button theme-toggle', [
-                    icon('control-icon theme-toggle__moon', element('path', '', null, { d: 'M20.6 13.5A8.5 8.5 0 0 1 10.5 3.4a8.5 8.5 0 1 0 10.1 10.1Z' })),
-                    icon('control-icon theme-toggle__sun', [element('path', '', null, { d: 'M16 12a4 4 0 1 1 -8 0a4 4 0 0 1 8 0Z' }), element('path', '', null, { d: 'M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4' })]),
-                ], { type: 'button', 'aria-label': ru ? 'Тёмная тема' : 'Dark theme', hidden: true }),
-                ...(!demo ? [element('button', 'icon-button search-trigger', [
-                    icon('control-icon search-trigger__icon', [element('path', '', null, { d: 'M17 10.5a6.5 6.5 0 1 1 -13 0a6.5 6.5 0 0 1 13 0Z' }), element('path', '', null, { d: 'm16 16 5 5' })]),
-                    element('span', 'search-trigger__label', ru ? 'Поиск' : 'Search'),
-                ], { type: 'button', 'aria-label': ru ? 'Поиск' : 'Search', 'aria-controls': 'site-search', 'aria-expanded': 'false', hidden: true })] : []),
-                element('button', 'icon-button menu-toggle', element('span', 'menu-toggle__line', '', { 'aria-hidden': 'true' }), { type: 'button', 'aria-label': ru ? 'Меню' : 'Menu', 'aria-controls': demo ? 'main-nav' : 'site-search', 'aria-expanded': 'false', hidden: true }),
-            ]),
-            search,
-        ]);
-        const sidebar = element('aside', 'sidebar', [
-            element('nav', 'sidebar__sections', groups.map(([prefix, label]) => element('div', 'sidebar__group', [
-                element('p', 'sidebar__label', label ?? ''),
-                ...pages.filter((page) => page.url === prefix || page.url.startsWith(`${prefix}/`)).map((page) => link(page.url, page.name, `sidebar__link${page.url.split('/').length > 3 ? ' sidebar__link_nested' : ''}`, page.url === url)),
-            ])), { id: 'doc-sections', 'aria-label': ru ? 'Разделы документации' : 'Documentation sections' }),
-        ], { 'aria-label': ru ? 'Разделы' : 'Sections' });
-        const index = pages.findIndex((page) => page.url === url);
-        const neighbors = [pages[index - 1], pages[index + 1]];
-        const main: BemNode = landing ? element('main', 'main main_landing', demo ? data.content : { block: 'home', props: { lang: data.lang, demoUrl, example: data.page['homeExample'] } }, { id: 'main' }) : element('main', 'main docs-layout', [
-            element('div', 'reading-nav', [
-                element('nav', 'breadcrumbs', element('ol', 'breadcrumbs__list', [link('/', demo ? 'Демо' : 'nuckty'), ...data.page.breadcrumbs.filter((route) => route !== url && Boolean(data.sitemap.pages[route])).map((route) => link(route, data.sitemap.pages[route]!.name))].map((item, i) => element('li', 'breadcrumbs__item', [
-                    ...(i ? [element('span', 'breadcrumbs__separator', '/', { 'aria-hidden': 'true' })] : []), item,
-                ]))), { 'aria-label': ru ? 'Путь к странице' : 'Breadcrumb' }),
-            link(demo ? '/' : '/docs', demo ? 'Все примеры →' : (ru ? 'Все разделы →' : 'All sections →'), 'sidebar__fallback', url === (demo ? '/' : '/docs')),
-            ]),
-            sidebar,
-            element('div', 'article-column', [
-                element('article', 'article', data.content),
-                element('nav', 'page-navigation', neighbors.map((page, i) => page ? element('a', 'page-navigation__link',
-                    element('span', 'page-navigation__name', [
-                        element('span', 'page-navigation__text', page.name),
-                    ]),
-                { href: page.url, rel: i === 0 ? 'prev' : 'next', 'data-direction': i === 0 ? 'previous' : 'next', 'aria-label': `${i === 0 ? (ru ? 'Предыдущая страница' : 'Previous page') : (ru ? 'Следующая страница' : 'Next page')}: ${page.name}` }) : null), { 'aria-label': ru ? 'Соседние страницы' : 'Neighboring pages' }),
-            ]),
-        ], { id: 'main' });
-        const footer = element('footer', 'footer' + (!demo ? ' footer_website' : ''), [
-            element('div', 'footer__identity', [
-                element(url === '/' ? 'span' : 'a', 'footer__brand', [
-                    ...(brand ? [element('img', 'footer__mark brand__mark_light', null, { src: `/${brand}`, alt: '', width: '40', height: '28' })] : []),
-                    ...(brandDark ? [element('img', 'footer__mark brand__mark_dark', null, { src: `/${brandDark}`, alt: '', width: '40', height: '28' })] : []),
-                    element('strong', '', 'nuckty'),
-                ], { ...(url === '/' ? {} : { href: demo ? siteUrl : '/', 'aria-label': ru ? 'nuckty — главная' : 'nuckty home' }) }),
-                element('p', 'footer__caption', [element('span', 'footer__made', ru ? 'Сделано на nuckty.' : 'Made with nuckty.'), element('br', '', null), ru ? 'Конечно' : 'Of course']),
-            ]),
-            element('nav', 'footer__links', [
-                link('https://github.com/nuckty/nuckty', 'GitHub'),
-                ...(!demo ? [element('a', 'source-link', ru ? 'Исходник страницы' : 'Page source', { href: data.page.file.startsWith('docs/') ? `https://github.com/nuckty/nuckty-docs/blob/main/${data.page.file.slice(5)}` : `https://github.com/nuckty/nuckty-site/blob/main/${landing ? 'blocks/home/home.nu.ts' : `content/${data.page.file}`}`, 'aria-label': ru ? 'Исходник страницы на GitHub' : 'Page source on GitHub' })] : []),
-                element('a', 'footer__license', 'MIT', { href: 'https://github.com/nuckty/nuckty/blob/main/LICENSE' }),
-            ], { 'aria-label': ru ? 'Дополнительные ссылки' : 'More links' }),
-        ]);
-
-        const head: BEMTree = [
-            element('meta', '', null, { charset: 'utf-8' }),
-            element('title', '', title),
-            element('meta', '', null, { name: 'viewport', content: 'width=device-width,initial-scale=1' }),
-            element('meta', '', null, { name: 'description', content: description }),
-            element('meta', '', null, { name: 'color-scheme', content: 'light dark' }),
-            element('meta', '', null, { name: 'theme-color', content: '#f7f9fa' }),
-            element('link', '', null, { rel: 'canonical', href: `${origin}${url}` }),
-            element('meta', '', null, { property: 'og:title', content: title }),
-            element('meta', '', null, { property: 'og:description', content: description }),
-            element('meta', '', null, { property: 'og:type', content: 'website' }),
-            element('meta', '', null, { property: 'og:url', content: `${origin}${url}` }),
-            ...(favicon ? [element('link', '', null, { rel: 'icon', type: 'image/svg+xml', href: `/${favicon}` })] : []),
-            ...Object.values(data.assets.css).filter((asset) => asset.hash !== 'empty').map((asset) => element('link', '', null, { rel: 'stylesheet', href: asset.url })),
-            ...[...data.alternates].map(([lang, alternate]) => element('link', '', null, { rel: 'alternate', hreflang: lang, href: alternate.url })),
-        ];
-
-        return {
-            tag: 'html', attrs: { lang: data.lang ?? 'ru', 'data-site': demo ? 'demo' : 'website', ...(landing && !demo ? { 'data-page': 'home' } : {}) },
-            content: [element('head', '', head), element('body', '', [
-                link('#main', ru ? 'К содержимому' : 'Skip to content', 'skip-link'),
-                header, main, footer,
-                ...Object.values(data.assets.js).filter((asset) => asset.hash !== 'empty').map((asset) => element('script', '', '', { src: asset.url, defer: true })),
-            ])],
-        };
+    block('root').elem('link')({
+        tag: (node) => (node.props?.active ? 'span' : 'a'),
+        attrs: (node, next) =>
+            node.props?.active
+                ? { ...next(), 'aria-current': 'page' }
+                : { ...next(), href: String(node.props?.href ?? '') },
+        bem: false,
     });
+    block('root').elem('input-label')({
+        tag: 'label',
+        attrs: (node, next) => ({ for: 'search-input', ...next(), ...attributes(node, ['for']) }),
+    });
+    block('root').elem('arrow-path')({
+        tag: 'path',
+        attrs: (node, next) => ({ ...next(), ...attributes(node, ['d']) }),
+        bem: false,
+    });
+    block('root').elem('name')({
+        tag: 'strong',
+        bem: false,
+    });
+    block('root').elem('break')({
+        tag: 'br',
+        bem: false,
+    });
+    block('root').elem('meta')({
+        tag: 'meta',
+        attrs: (node, next) => ({ ...next(), ...attributes(node, ['charset', 'name', 'content', 'property']) }),
+        bem: false,
+    });
+    block('root').elem('title')({
+        tag: 'title',
+        bem: false,
+    });
+    block('root').elem('resource')({
+        tag: 'link',
+        attrs: (node, next) => ({ ...next(), ...attributes(node, ['rel', 'href', 'type', 'hreflang']) }),
+        bem: false,
+    });
+    block('root').elem('head')({
+        tag: 'head',
+        bem: false,
+    });
+    block('root').elem('script')({
+        tag: 'script',
+        attrs: (node, next) => ({ defer: true, ...next(), ...attributes(node, ['src', 'defer']) }),
+        bem: false,
+    });
+    block('root').elem('body')({
+        tag: 'body',
+        bem: false,
+    });
+    block('root').elem('html')({
+        tag: 'html',
+        attrs: (node, next) => ({ ...next(), ...attributes(node, ['lang', 'data-site', 'data-page']) }),
+    });
+    block('root').when((node) => !node.elem)({
+        tag: 'div',
+    });
+    block<import('@nuckty/core').DocumentData>('root')
+        .when((node) => !node.elem && Boolean(node.props))
+        .wrap(documentTree);
 }

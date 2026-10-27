@@ -2,7 +2,7 @@ import { markdownTree, previewDocument } from './markdown-preview.ts';
 
 import { renderToHtml } from '@nuckty/core/browser';
 
-const workbench = document.querySelector('.home-markdown');
+const workbench = document.querySelector('.home__markdown');
 
 if (workbench) {
     const input = workbench.querySelector('textarea');
@@ -38,7 +38,7 @@ if (workbench) {
         });
     }
     input.addEventListener('input', update);
-    workbench.querySelector('.home-markdown__reset').addEventListener('click', () => {
+    workbench.querySelector('.home__markdown-reset').addEventListener('click', () => {
         input.value = input.defaultValue;
         update();
     });

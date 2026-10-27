@@ -16,24 +16,30 @@
         "validate": "npm run validate:ru && npm run validate:en",
         "validate:ru": "nuckty validate ru",
         "validate:en": "nuckty validate en",
-        "lint": "tsc --noEmit -p config/config-ts.json",
+        "lint": "tsc --noEmit -p config/config-ts.json && npm run lint:css",
         "test": "node --test test/*.test.mjs",
         "test:starter": "node scripts/test-starter.mjs",
-        "build:preview": "NUCKTY_PREVIEW=1 npm run build"
+        "build:preview": "NUCKTY_PREVIEW=1 npm run build",
+        "lint:css": "stylelint \"blocks/**/*.css\" --config config/config-stylelint.mjs && prettier \"blocks/**/*.css\" --check --config config/config-prettier.json",
+        "lint:fix": "prettier \"blocks/**/*.css\" --write --config config/config-prettier.json && stylelint \"blocks/**/*.css\" --config config/config-stylelint.mjs --fix"
     },
     "dependencies": {
-        "@orama/orama": "3.1.18",
-        "@orama/stemmers": "3.1.18",
         "@nuckty/core": "1.0.0-beta2",
         "@nuckty/ext-block-root": "1.0.0-beta2",
         "@nuckty/ext-command-serve": "1.0.0-beta2",
         "@nuckty/ext-command-validate-vnu": "1.0.0-beta2",
-        "@nuckty/ext-markdown-typography-ru": "1.0.0-beta2"
+        "@nuckty/ext-markdown-typography-ru": "1.0.0-beta2",
+        "@orama/orama": "3.1.18",
+        "@orama/stemmers": "3.1.18"
     },
     "devDependencies": {
+        "@stylistic/stylelint-plugin": "3.1.2",
         "@tanstack/highlight": "0.1.0",
         "@types/node": "24.13.3",
         "esbuild": "0.28.2",
+        "prettier": "3.8.1",
+        "stylelint": "16.26.1",
+        "stylelint-order": "8.1.1",
         "typescript": "7.0.2"
     },
     "repository": {
