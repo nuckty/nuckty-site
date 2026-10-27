@@ -11,7 +11,7 @@ const destination = path.join(root, 'content/downloads');
 const temp = mkdtempSync(path.join(tmpdir(), 'nuckty-starter-'));
 const excluded = new Set(['node_modules', '.git', '.build', 'site', 'dist', 'plans', 'external', '.npmrc', '.aws', '.agents', '.codex', '.coverage', 'coverage']);
 const names = ['nuckty', 'nuckty-ext-block-root', 'nuckty-ext-command-serve', 'nuckty-ext-block-gallery', 'nuckty-ext-block-grid', 'nuckty-ext-markdown-typography-ru', 'nuckty-ext-markdown-video', 'nuckty-ext-command-validate-vnu', 'nuckty-ext-command-deploy-ftp', 'nuckty-ext-command-content-external', 'nuckty-ext-command-convert-images'];
-const initialPackages = new Set(['nuckty', 'nuckty-ext-block-root', 'nuckty-ext-command-serve']);
+const initialPackages = new Set(['@nuckty/core', '@nuckty/ext-block-root', '@nuckty/ext-command-serve']);
 const env = { ...process.env, npm_config_userconfig: path.join(temp, 'npmrc'), npm_config_globalconfig: path.join(temp, 'global.npmrc'), npm_config_registry: 'https://registry.npmjs.org', npm_config_cache: process.env.NUCKTY_NPM_CACHE ?? path.join(root, '.cache/npm-starter') };
 writeFileSync(env.npm_config_userconfig, '');
 writeFileSync(env.npm_config_globalconfig, '');
@@ -34,7 +34,8 @@ try {
         symlinkSync(path.join(original, 'node_modules'), path.join(source, 'node_modules'), 'dir');
         const output = execFileSync('npm', ['pack', '--json', '--offline', '--cache', env.npm_config_cache, '--pack-destination', archives], { cwd: source, env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
         const [packed] = JSON.parse(output.slice(output.lastIndexOf('\n[\n') + 1));
-        dependencies[name] = `file:packages/${packed.filename}`;
+        const manifest = JSON.parse(readFileSync(path.join(source, 'package.json'), 'utf8'));
+        dependencies[manifest.name] = `file:packages/${packed.filename}`;
     }
 
     mkdirSync(destination, { recursive: true });
@@ -46,7 +47,7 @@ try {
         cpSync(archives, path.join(project, 'packages'), { recursive: true });
         write(project, 'package.json', { name: 'nuckty-starter', version: '1.0.0-beta1', private: true, type: 'module', scripts: { build: 'nuckty build', serve: 'nuckty serve --port 8080', stop: 'nuckty stop' }, dependencies: Object.fromEntries(Object.entries(dependencies).filter(([name]) => initialPackages.has(name))) });
         write(project, '.npmrc', 'registry=https://registry.npmjs.org\n');
-        write(project, 'config/config-nuckty.ts', `import { defineNucktyConfig } from 'nuckty';\n\nexport default defineNucktyConfig({\n    targets: { main: { configDir: 'config/', outDir: 'site/', lang: '${lang}', host: 'localhost' } },\n    ext: ['nuckty-ext-block-root', 'nuckty-ext-command-serve'],\n});\n\n`);
+        write(project, 'config/config-nuckty.ts', `import { defineNucktyConfig } from '@nuckty/core';\n\nexport default defineNucktyConfig({\n    targets: { main: { configDir: 'config/', outDir: 'site/', lang: '${lang}', host: 'localhost' } },\n    ext: ['@nuckty/ext-block-root', '@nuckty/ext-command-serve'],\n});\n\n`);
         write(project, 'config/site.json', { baseUrl: 'http://localhost:8080', rootTitle: ru ? 'Мой сайт' : 'My website', bundles: ['page'] });
         write(project, 'config/levels.json', ['content', 'blocks']);
         write(project, 'config/external.json', []);

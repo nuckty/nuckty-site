@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
-import { render, Templates } from 'nuckty';
+import { render, Templates } from '@nuckty/core';
 
 const bundle = await build({
     stdin: {
-        contents: "export { markdownTree, previewDocument } from './blocks/home/markdown-preview.ts'; export { renderToHtml } from 'nuckty/src/bem/render-to-html.ts';",
+        contents: "export { markdownTree, previewDocument } from './blocks/home/markdown-preview.ts'; export { renderToHtml } from '@nuckty/core/src/bem/render-to-html.ts';",
         resolveDir: new URL('..', import.meta.url).pathname,
     },
     bundle: true, write: false, platform: 'browser', format: 'esm', minify: true,

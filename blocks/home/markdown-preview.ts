@@ -1,4 +1,4 @@
-import type { BemNode } from 'nuckty';
+import type { BemNode } from '@nuckty/core';
 
 /** Parse the limited homepage preview: headings and plain paragraphs. */
 export function markdownTree(source: string): BemNode[] {

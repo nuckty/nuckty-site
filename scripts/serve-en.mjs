@@ -2,7 +2,7 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
-import { generateNginxConfig } from 'nuckty';
+import { generateNginxConfig } from '@nuckty/core';
 
 const root = path.resolve(import.meta.dirname, '..');
 const directory = path.join(root, '.preview/en');
@@ -64,4 +64,3 @@ if (process.argv.includes('--stop')) {
     child.on('error', (error) => { throw error; });
     child.on('exit', (code) => { process.exitCode = code ?? 1; });
 }
-

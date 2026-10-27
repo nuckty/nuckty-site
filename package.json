@@ -1,5 +1,5 @@
 {
-    "name": "nuckty-site",
+    "name": "@nuckty/site",
     "version": "1.0.0-beta1",
     "private": true,
     "type": "module",
@@ -24,11 +24,11 @@
     "dependencies": {
         "@orama/orama": "3.1.18",
         "@orama/stemmers": "3.1.18",
-        "nuckty": "file:../nuckty",
-        "nuckty-ext-block-root": "file:../nuckty-ext-block-root",
-        "nuckty-ext-command-serve": "file:../nuckty-ext-command-serve",
-        "nuckty-ext-command-validate-vnu": "file:../nuckty-ext-command-validate-vnu",
-        "nuckty-ext-markdown-typography-ru": "file:../nuckty-ext-markdown-typography-ru"
+        "@nuckty/core": "file:../nuckty",
+        "@nuckty/ext-block-root": "file:../nuckty-ext-block-root",
+        "@nuckty/ext-command-serve": "file:../nuckty-ext-command-serve",
+        "@nuckty/ext-command-validate-vnu": "file:../nuckty-ext-command-validate-vnu",
+        "@nuckty/ext-markdown-typography-ru": "file:../nuckty-ext-markdown-typography-ru"
     },
     "devDependencies": {
         "@tanstack/highlight": "0.1.0",
@@ -45,4 +45,3 @@
         "email": "vitaly@harisov.name"
     }
 }
-

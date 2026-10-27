@@ -1,7 +1,7 @@
 import { copyFile, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { markdownTree } from '../blocks/home/markdown-preview.js';
-import { assertArtifactPath, render, type BemNode, type DocumentData, type NucktyEnv } from 'nuckty';
+import { assertArtifactPath, render, type BemNode, type DocumentData, type NucktyEnv } from '@nuckty/core';
 
 export function register(env: NucktyEnv): void {
     env.pipeline.before('compression', async (ctx) => {

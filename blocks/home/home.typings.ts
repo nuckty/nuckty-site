@@ -1,4 +1,4 @@
-import type { BEMTree } from 'nuckty';
+import type { BEMTree } from '@nuckty/core';
 
 export interface HomeExample {
     tree: BEMTree;
@@ -7,4 +7,3 @@ export interface HomeExample {
     html: string;
     markdown: { source: string; html: string };
 }
-

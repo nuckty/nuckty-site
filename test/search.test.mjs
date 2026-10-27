@@ -40,7 +40,7 @@ for (const language of ['ru', 'en']) {
         const code = searchPages(databases[language], 'defineNucktyConfig');
         assert.ok(code.hits.length > 0);
         assert.ok(code.hits.every((hit) => hit.document.text.includes('defineNucktyConfig')));
-        assert.equal(searchPages(databases[language], 'nuckty-ext-command-serve').hits[0]?.document.url, '/ext/command/serve');
+        assert.equal(searchPages(databases[language], '@nuckty/ext-command-serve').hits[0]?.document.url, '/ext/command/serve');
         assert.ok(searchPages(databases[language], 'env.commands.add').hits.slice(0, 3).some((hit) => ['/ext/command', '/how/ext/command'].includes(hit.document.url)));
     });
 

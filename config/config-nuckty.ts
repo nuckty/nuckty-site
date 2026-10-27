@@ -1,4 +1,4 @@
-import { defineNucktyConfig } from 'nuckty';
+import { defineNucktyConfig } from '@nuckty/core';
 
 const preview = process.env['NUCKTY_PREVIEW'] === '1';
 
@@ -16,11 +16,11 @@ export default defineNucktyConfig({
         },
     },
     ext: [
-        'nuckty-ext-block-root',
+        '@nuckty/ext-block-root',
         './ext/highlight.ts',
-        'nuckty-ext-markdown-typography-ru',
-        'nuckty-ext-command-serve',
-        'nuckty-ext-command-validate-vnu',
+        '@nuckty/ext-markdown-typography-ru',
+        '@nuckty/ext-command-serve',
+        '@nuckty/ext-command-validate-vnu',
         './ext/home-example.ts',
         './ext/search.ts',
     ],

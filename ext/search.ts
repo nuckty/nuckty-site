@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { build } from 'esbuild';
-import { assertArtifactPath, type DocumentData, type NucktyEnv } from 'nuckty';
+import { assertArtifactPath, type DocumentData, type NucktyEnv } from '@nuckty/core';
 
 export function register(env: NucktyEnv): void {
     env.pipeline.before('html', async (ctx) => {

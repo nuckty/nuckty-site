@@ -1,6 +1,6 @@
 import { highlightCode } from '../../ext/highlight.js';
 import { previewDocument } from './markdown-preview.js';
-import { block, type BEMTree, type BemNode } from 'nuckty';
+import { block, type BEMTree, type BemNode } from '@nuckty/core';
 import type { HomeExample } from './home.typings.js';
 
 const el = (tag: string, cls: string, content: BEMTree, attrs: BemNode['attrs'] = {}): BemNode => ({ tag, cls, content, attrs, bem: false });
