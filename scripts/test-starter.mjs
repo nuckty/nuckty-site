@@ -1,5 +1,5 @@
 /** Verify both delivered ZIPs after extraction, without sibling source access. */
-import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, existsSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import assert from 'node:assert/strict';
@@ -86,14 +86,25 @@ try {
         execFileSync('python3', ['-c', 'import sys,zipfile; z=zipfile.ZipFile(sys.argv[1]); assert z.testzip() is None; assert all(n.startswith("nuckty-starter/") and ".." not in n.split("/") for n in z.namelist()); z.extractall(sys.argv[2])', path.join(root, `content/downloads/nuckty-starter-${language}.zip`), destination]);
         const consumer = path.join(destination, 'nuckty-starter');
         const manifest = JSON.parse(readFileSync(path.join(consumer, 'package.json'), 'utf8'));
-        assert.ok(Object.values(manifest.dependencies).every((value) => value.startsWith('file:packages/')));
+        assert.ok(Object.values(manifest.dependencies).every((value) => value === '1.0.0-beta1'));
+        assert.equal(existsSync(path.join(consumer, 'packages')), false, 'starter must install registry releases without bundled archives');
         const env = { ...process.env, npm_config_cache: cache, npm_config_registry: 'https://registry.npmjs.org' };
-        const packageFiles = readdirSync(path.join(consumer, 'packages')).filter((file) => file.endsWith('.tgz'));
-        assert.equal(packageFiles.length, 11, 'starter must ship the complete package set');
         execFileSync('npm', ['install', ...offline, '--no-audit', '--no-fund', '--registry=https://registry.npmjs.org', '--cache', cache], { cwd: consumer, env, stdio: ['ignore', 'pipe', 'pipe'] });
         if (extensions) {
-            execFileSync('npm', ['install', ...offline, '--no-audit', '--no-fund', '--registry=https://registry.npmjs.org', '--cache', cache, ...packageFiles.map((file) => `./packages/${file}`)], { cwd: consumer, env, stdio: ['ignore', 'pipe', 'pipe'] });
+            execFileSync('npm', ['install', ...offline, '--save-exact', '--no-audit', '--no-fund', '--registry=https://registry.npmjs.org', '--cache', cache, ...Object.entries(JSON.parse(readFileSync(path.join(root, 'content/downloads/receipt.json'), 'utf8'))[language].packages).map(([name, version]) => `${name}@${version}`)], { cwd: consumer, env, stdio: ['ignore', 'pipe', 'pipe'] });
         }
+        const lock = JSON.parse(readFileSync(path.join(consumer, 'package-lock.json'), 'utf8'));
+
+        for (const [location, entry] of Object.entries(lock.packages)) {
+            assert.ok(!entry.link, `${location}: starter must not use local source links`);
+
+            if (location.startsWith('node_modules/@nuckty/')) {
+                assert.equal(entry.version, '1.0.0-beta1');
+                assert.ok(entry.resolved.startsWith('https://registry.npmjs.org/'));
+                assert.ok(entry.integrity);
+            }
+        }
+
         execFileSync('npm', ['run', 'build'], { cwd: consumer, env, stdio: ['ignore', 'pipe', 'pipe'] });
         const html = readFileSync(path.join(consumer, 'site/html/index.html'), 'utf8');
         assert.match(html, new RegExp(`lang=${language}`));
@@ -107,7 +118,7 @@ try {
     }
 
     passed = true;
-    process.stdout.write(preview ? 'Both starters passed install, build, serve, edit, rebuild and stop.\n' : 'Both starter ZIPs passed extraction, package-only install and standalone build.\n');
+    process.stdout.write(preview ? 'Both starters passed install, build, serve, edit, rebuild and stop.\n' : 'Both starter ZIPs passed extraction, registry-only install and standalone build.\n');
 } finally {
     if (passed) {
         rmSync(temp, { recursive: true, force: true });

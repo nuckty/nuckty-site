@@ -116,7 +116,7 @@ for (const target of targets) {
             assert.ok(!startText.includes('<a') && !startText.includes('href='), 'search snippets must omit HTML markup');
             assert.match(startText, /nuckty-starter/);
             const starter = JSON.parse(await readFile(path.join(root, 'content/downloads/receipt.json'), 'utf8'));
-            const archives = new Set(Object.values(starter[target].packages).map((reference) => `./${reference.slice('file:'.length)}`));
+            const releases = new Set(Object.entries(starter[target].packages).map(([name, version]) => `${name}@${version}`));
 
             for (const [route, page] of pages) {
                 if (!route.startsWith('/ext/')) {
@@ -130,10 +130,11 @@ for (const target of targets) {
                         }
 
                         for (const argument of line.trim().split(/\s+/).slice(2)) {
-                            assert.ok(!/^nuckty(?:-ext-[\w-]+)?(?:@.*)?$/.test(argument), `${route}: unpublished registry installation ${argument}`);
+                            assert.ok(!/^nuckty(?:-ext-[\w-]+)?(?:@.*)?$/.test(argument), `${route}: legacy package name ${argument}`);
+                            assert.ok(!argument.startsWith('./packages/'), `${route}: local archive installation ${argument}`);
 
-                            if (argument.startsWith('./packages/')) {
-                                assert.ok(archives.has(argument), `${route}: missing starter archive ${argument}`);
+                            if (argument.startsWith('@nuckty/')) {
+                                assert.ok(releases.has(argument), `${route}: missing exact public release ${argument}`);
                             }
                         }
                     }

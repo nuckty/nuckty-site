@@ -1,6 +1,6 @@
 # nuckty-site
 
-Nuckty product website and canonical documentation. Russian and English targets share blocks and matching routes. Both use the supplied new SVG logo and a separate square favicon derived from its mark. The starter carries all eleven prepared package archives; its default install uses core/root/serve.
+Nuckty product website and canonical documentation. Russian and English targets share blocks and matching routes. Both use the supplied new SVG logo and a separate square favicon derived from its mark. The starter installs exact public npm versions of core/root/serve; extensions are added from npm.
 
 The landing-page tabs show the actual BEMJSON, template file and HTML from the current build. Documentation starts with the setup guide and data model; mobile section navigation is expandable.
 
@@ -8,7 +8,7 @@ The website build uses Python 3 to package the starter. Installing and building 
 
 ## Build and check
 
-Requires Node.js 24+, npm, prepared sibling nuckty/extension packages and `../nuckty-docs`.
+Requires Node.js 24+, npm and `../nuckty-docs`. Nuckty dependencies are exact public npm releases; sibling engine/extension sources are not required.
 
 ```bash
 npm ci
@@ -43,7 +43,6 @@ MIT. Logo license: `blocks/brand/LICENSE`.
 
 ## Source CI
 
-The `CI` workflow checks out all eleven package sources at the exact SHA values in `NUCKTY_SOURCES` and documentation at `NUCKTY_DOCS_REF`. Configure these repository variables before the first CI run. No deployment or npm publication is performed. Public origins are nuckty.ru/nuckty.com and demo.nuckty.ru/demo.nuckty.com; `npm run build:preview` selects localhost links.
+The `CI` workflow installs package dependencies from the checked-in registry lockfile and checks out only canonical documentation at its latest successful CI commit. It verifies both languages and standalone npm-based starters before deploying approved main-branch artifacts. Public origins are nuckty.ru/nuckty.com and demo.nuckty.ru/demo.nuckty.com; `npm run build:preview` selects localhost links.
 
 Contact: vitaly@harisov.name.
-

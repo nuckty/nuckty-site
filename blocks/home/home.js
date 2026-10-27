@@ -1,6 +1,6 @@
 import { markdownTree, previewDocument } from './markdown-preview.ts';
 
-import { renderToHtml } from '@nuckty/core/src/bem/render-to-html.ts';
+import { renderToHtml } from '@nuckty/core/browser';
 
 const workbench = document.querySelector('.home-markdown');
 
