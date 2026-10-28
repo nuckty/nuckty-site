@@ -23,21 +23,10 @@ jobs:
         with:
           persist-credentials: false
           path: nuckty-site
-      - name: Resolve latest successfully verified documentation
+      - name: Pin the latest successfully verified documentation
         env:
           GH_TOKEN: ${{ github.token }}
         run: node nuckty-site/.github/resolve-sources.mjs
-      - name: Require pinned documentation source
-        run: |
-          [[ "$NUCKTY_DOCS_REF" =~ ^[a-f0-9]{40}$ ]] || { echo 'NUCKTY_DOCS_REF must be a 40-character commit SHA.'; exit 1; }
-      - name: Checkout canonical documentation
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-          repository: nuckty/nuckty
-          ref: ${{ env.NUCKTY_DOCS_REF }}
-          path: canonical-source
-          sparse-checkout: docs
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
@@ -51,9 +40,10 @@ jobs:
       - name: Audit website lockfile
         working-directory: nuckty-site
         run: npm audit --package-lock-only --audit-level=low --registry=https://registry.npmjs.org
+      - name: Prepare the pinned documentation source
+        working-directory: nuckty-site
+        run: npx nuckty content-external
       - name: Build and verify immutable website artifacts
-        env:
-          NUCKTY_DOCS_DIR: ${{ github.workspace }}/canonical-source/docs
         working-directory: nuckty-site
         run: |
           python3 -m unittest discover -s deploy -p 'test_*.py'

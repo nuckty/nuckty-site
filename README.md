@@ -8,7 +8,7 @@ The website build uses Python 3 to package the starter. Installing and building 
 
 ## Build and check
 
-Requires Node.js 24+, npm and `../nuckty-docs`. Nuckty dependencies are exact public npm releases; sibling engine/extension sources are not required.
+Requires Node.js 24+, npm, Git and Git LFS. Nuckty dependencies are exact public npm releases. Run `npx nuckty content-external` once after `npm ci`: it checks out the `docs/` directory of `nuckty/nuckty` at the commit pinned in `config/external.json` into `external/nuckty/`. CI pins the latest commit with successful CI before building.
 
 ```bash
 npm ci
@@ -18,7 +18,7 @@ npm test
 npm run validate
 ```
 
-`build` prepares documentation locally and invokes `nuckty build`. Output is `site/ru/` and `site/en/`. Generated docs, sitemaps and search data are ignored; edit canonical `../nuckty-docs` or product copy in `content/`. `test` checks links, anchors, assets, IDs, manifest hashes/sizes, Brotli/Gzip round trips, logo and hreflang. Nu validation requires Java.
+`build` prepares documentation locally and invokes `nuckty build`. Output is `site/ru/` and `site/en/`. Generated docs, sitemaps and search data are ignored; edit canonical `docs/` in `nuckty/nuckty` or product copy in `content/`. The page order comes from its `docs/pages.json`. `test` checks links, anchors, assets, IDs, manifest hashes/sizes, Brotli/Gzip round trips, logo and hreflang. Nu validation requires Java.
 
 ## Local preview
 

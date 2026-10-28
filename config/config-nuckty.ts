@@ -21,6 +21,7 @@ export default defineNucktyConfig({
         '@nuckty/ext-markdown-typography-ru',
         '@nuckty/ext-command-serve',
         '@nuckty/ext-command-validate-vnu',
+        '@nuckty/ext-command-content-external',
         './ext/home-example.ts',
         './ext/search.ts',
     ],

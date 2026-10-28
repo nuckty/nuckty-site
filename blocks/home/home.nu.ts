@@ -2,8 +2,7 @@ import { messages } from './home.i18n/index.js';
 import { highlightCode } from '../../ext/highlight.js';
 import { previewDocument } from './markdown-preview.js';
 import type { HomeExample } from './home.typings.js';
-import { b, attributes } from '../bem/bem.js';
-import { block, type BEMTree, type BemNode } from '@nuckty/core';
+import { block, type BEMTree, type BemNode, b, attributes } from '@nuckty/core';
 
 const arrow = (): BemNode => b('home', 'arrow', b('home', 'arrow-path'));
 const lines = (first: string, second: string): BEMTree => [b('home', 'text', first), ' ', b('home', 'text', second)];
