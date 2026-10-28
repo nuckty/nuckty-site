@@ -409,7 +409,7 @@ function documentTree(
                         ? [
                               b('source-link', undefined, t['Page source'], {
                                   href: data.page.file.startsWith('docs/')
-                                      ? `https://github.com/nuckty/nuckty-docs/blob/main/${data.page.file.slice(5)}`
+                                      ? `https://github.com/nuckty/nuckty/blob/main/docs/${data.page.file.slice(5)}`
                                       : `https://github.com/nuckty/nuckty-site/blob/main/${landing ? 'blocks/home/home.nu.ts' : `content/${data.page.file}`}`,
                                   'aria-label': t['Page source on GitHub'],
                               }),

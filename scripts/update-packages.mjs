@@ -21,8 +21,8 @@ const packages = [
 const exactVersion = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 
 export async function selectVersions(current, channel, request = fetch) {
-    if (!['beta', 'latest'].includes(channel) || Object.keys(current).some((name) => !packages.includes(name))) {
-        throw new Error('Only official package names and beta/latest release channels are supported');
+    if (!['beta', 'rc', 'latest'].includes(channel) || Object.keys(current).some((name) => !packages.includes(name))) {
+        throw new Error('Only official package names and beta/rc/latest release channels are supported');
     }
 
     const selected = {};

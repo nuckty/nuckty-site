@@ -5,7 +5,7 @@ const headers = { Accept: 'application/vnd.github+json' };
 if (process.env.GH_TOKEN) {
     headers.Authorization = `Bearer ${process.env.GH_TOKEN}`;
 }
-for (const name of ['nuckty-docs']) {
+for (const name of ['nuckty']) {
     const url = `https://api.github.com/repos/nuckty/${name}/actions/workflows/ci.yml/runs?branch=main&event=push&status=success&per_page=1`;
     const response = await fetch(url, { headers });
 

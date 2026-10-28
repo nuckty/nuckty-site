@@ -7,7 +7,7 @@ on:
         description: Verified npm release channel
         required: true
         type: choice
-        options: [beta, latest]
+        options: [beta, rc, latest]
 
 concurrency:
   group: update-published-packages
@@ -52,13 +52,13 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-          repository: nuckty/nuckty-docs
+          repository: nuckty/nuckty
           ref: ${{ env.NUCKTY_DOCS_REF }}
           path: canonical-docs
-      - name: Place documentation outside the consumer
-        if: steps.changes.outputs.changed == 'true'
-        run: mv canonical-docs ../nuckty-docs
+          sparse-checkout: docs
       - name: Verify compatible registry install and consumer
+        env:
+          NUCKTY_DOCS_DIR: ${{ github.workspace }}/canonical-docs/docs
         if: steps.changes.outputs.changed == 'true'
         run: |
           java -version

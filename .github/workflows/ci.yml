@@ -34,9 +34,10 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-          repository: nuckty/nuckty-docs
+          repository: nuckty/nuckty
           ref: ${{ env.NUCKTY_DOCS_REF }}
-          path: nuckty-docs
+          path: canonical-source
+          sparse-checkout: docs
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
@@ -51,6 +52,8 @@ jobs:
         working-directory: nuckty-site
         run: npm audit --package-lock-only --audit-level=low --registry=https://registry.npmjs.org
       - name: Build and verify immutable website artifacts
+        env:
+          NUCKTY_DOCS_DIR: ${{ github.workspace }}/canonical-source/docs
         working-directory: nuckty-site
         run: |
           python3 -m unittest discover -s deploy -p 'test_*.py'

@@ -5,7 +5,7 @@ import { searchDocument } from './search-document.mjs';
 import { packageExamples } from './package-examples.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
-const docs = path.resolve(root, '../nuckty-docs');
+const docs = path.resolve(root, process.env.NUCKTY_DOCS_DIR ?? '../nuckty/docs');
 const versions = JSON.parse(await readFile(path.join(root, 'config/config-packages.json'), 'utf8'));
 const destination = path.join(root, 'content/docs');
 const files = ['index.md', 'index.ru.md'];

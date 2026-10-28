@@ -6,6 +6,13 @@ import path from 'node:path';
 import { selectVersions, updateDependencies, updatePackages } from '../scripts/update-packages.mjs';
 
 const versions = { '@nuckty/core': '1.0.0-beta1' };
+test('selects release candidate metadata from the rc channel', async () => {
+    const selected = await selectVersions(versions, 'rc', async (url) => {
+        assert.equal(url, 'https://registry.npmjs.org/%40nuckty%2Fcore/rc');
+        return { ok: true, json: async () => ({ name: '@nuckty/core', version: '1.0.0-rc.0', dist: { tarball: 'https://registry.npmjs.org/@nuckty/core/-/core-1.0.0-rc.0.tgz', integrity: 'sha512-fixture' } }) };
+    });
+    assert.deepEqual(selected, { '@nuckty/core': '1.0.0-rc.0' });
+});
 test('updates only allowlisted exact registry versions', async () => {
     const selected = await selectVersions(versions, 'beta', async (url) => {
         assert.equal(url, 'https://registry.npmjs.org/%40nuckty%2Fcore/beta');

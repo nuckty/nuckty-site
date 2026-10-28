@@ -15,7 +15,7 @@ function run(mode) {
             if (parsed.searchParams.get('branch') !== 'main' || parsed.searchParams.get('event') !== 'push' || parsed.searchParams.get('status') !== 'success' || headers.Authorization !== 'Bearer fixture-token') {
                 throw new Error('Invalid verified-source request');
             }
-            assert.equal(parsed.pathname, '/repos/nuckty/nuckty-docs/actions/workflows/ci.yml/runs');
+            assert.equal(parsed.pathname, '/repos/nuckty/nuckty/actions/workflows/ci.yml/runs');
             return {
                 ok: !(process.env.MOCK_MODE === 'http'),
                 status: 403,
