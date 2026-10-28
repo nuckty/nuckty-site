@@ -1,7 +1,7 @@
 # deployment Specification
 
 ## Purpose
-TBD - created by archiving change automatic-static-deployment. Update Purpose after archive.
+Specify how CI publishes the verified static website artifact to the hosting server and recovers from a failed switch.
 
 ## Requirements
 
