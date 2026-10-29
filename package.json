@@ -26,6 +26,7 @@
     "dependencies": {
         "@nuckty/core": "1.0.0-rc.1",
         "@nuckty/ext-block-root": "1.0.0-rc.1",
+        "@nuckty/ext-command-content-external": "1.0.0-rc.1",
         "@nuckty/ext-command-serve": "1.0.0-rc.1",
         "@nuckty/ext-command-validate-vnu": "1.0.0-rc.1",
         "@nuckty/ext-markdown-typography-ru": "1.0.0-rc.1",
