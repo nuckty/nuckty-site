@@ -37,7 +37,7 @@
     --inline-code: #1c333c;
 }
 
-[data-page='home'] .main_landing {
+[data-page='home'] .main_layout_landing {
     max-width: none;
     margin: 0;
     padding: 0;

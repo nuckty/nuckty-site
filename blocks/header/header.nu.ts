@@ -1,14 +1,88 @@
-import { block, attributes } from '@nuckty/core';
+import { block, attributes, type BemNode, type DocumentData } from '@nuckty/core';
+import { pageContext } from '../root/root.page.js';
+
+function icon(paths: string[], mix?: BemNode['mix']): BemNode {
+    return {
+        block: 'control-icon',
+        ...(mix ? { mix } : {}),
+        content: paths.map((d) => ({ block: 'control-icon', elem: 'path', props: { d } })),
+    };
+}
 
 export default function templates(): void {
+    block<DocumentData>('header')({
+        tag: 'header',
+        content: (node) => {
+            const data = node.props;
+
+            if (!data) {
+                return null;
+            }
+            const { t, url, home, demoUrl } = pageContext(data);
+            const docs = !['/', '/use-cases', '/how/start'].includes(url);
+
+            return [
+                { block: 'brand', mods: { linked: !home }, props: data },
+                {
+                    block: 'header',
+                    elem: 'nav',
+                    props: { 'aria-label': t['Main navigation'] },
+                    content: [
+                        { block: 'link', mods: { current: url === '/use-cases' }, props: { href: '/use-cases' }, content: t['Use cases'] },
+                        { block: 'link', mods: { current: url === '/how/start' }, props: { href: '/how/start' }, content: t['Get started'] },
+                        { block: 'link', mods: { current: docs }, props: { href: '/docs' }, content: t['Docs'] },
+                        { block: 'link', props: { href: demoUrl }, content: t['Demo ↗'] },
+                    ],
+                },
+                { block: 'header', elem: 'tools', props: data },
+                { block: 'header-search', props: data },
+            ];
+        },
+    });
     block('header').elem('nav')({
         tag: 'nav',
-        attrs: (node, next) => ({ id: 'main-nav', ...next(), ...attributes(node, ['id', 'aria-label']) }),
+        attrs: (node, next) => ({ ...next(), id: 'main-nav', ...attributes(node, ['aria-label']) }),
     });
-    block('header').elem('tools')({
+    block<DocumentData>('header').elem('tools')({
         tag: 'div',
-    });
-    block('header')({
-        tag: 'header',
+        content: (node) => {
+            const data = node.props;
+
+            if (!data) {
+                return null;
+            }
+            const { t, alternateUrl } = pageContext(data);
+
+            return [
+                { block: 'language-link', props: { href: alternateUrl }, content: t['RU'] },
+                {
+                    block: 'icon-button',
+                    mix: [{ block: 'theme-toggle' }],
+                    props: { 'aria-label': t['Dark theme'], hidden: true },
+                    content: [
+                        icon(['M20.6 13.5A8.5 8.5 0 0 1 10.5 3.4a8.5 8.5 0 1 0 10.1 10.1Z'], [{ block: 'theme-toggle', elem: 'moon' }]),
+                        icon([
+                            'M16 12a4 4 0 1 1 -8 0a4 4 0 0 1 8 0Z',
+                            'M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
+                        ], [{ block: 'theme-toggle', elem: 'sun' }]),
+                    ],
+                },
+                {
+                    block: 'icon-button',
+                    mix: [{ block: 'search-trigger' }],
+                    props: { 'aria-label': t['Search'], 'aria-controls': 'site-search', 'aria-expanded': 'false', hidden: true },
+                    content: [
+                        icon(['M17 10.5a6.5 6.5 0 1 1 -13 0a6.5 6.5 0 0 1 13 0Z', 'm16 16 5 5'], [{ block: 'search-trigger', elem: 'icon' }]),
+                        { block: 'search-trigger', elem: 'label', content: t['Search'] },
+                    ],
+                },
+                {
+                    block: 'icon-button',
+                    mix: [{ block: 'menu-toggle' }],
+                    props: { 'aria-label': t['Menu'], 'aria-controls': 'site-search', 'aria-expanded': 'false', hidden: true },
+                    content: { block: 'menu-toggle', elem: 'line', content: '' },
+                },
+            ];
+        },
     });
 }

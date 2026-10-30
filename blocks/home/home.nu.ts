@@ -87,7 +87,7 @@ function homeContent(
                         'source',
                         [
                             b('home', 'caption', t['The block · BEMJSON']),
-                            b('code-window', 'code', b('home', 'code', { raw: highlightCode(example.input, 'json') })),
+                            b('code-window', 'code', b('home', 'code', highlightCode(example.input, 'json'))),
                         ],
                         { id: 'home-bemjson-panel' },
                     ),
@@ -96,7 +96,7 @@ function homeContent(
                         'source',
                         [
                             b('home', 'caption', t['The markup · nu.ts template']),
-                            b('code-window', 'code', b('home', 'code', { raw: highlightCode(example.template, 'ts') })),
+                            b('code-window', 'code', b('home', 'code', highlightCode(example.template, 'ts'))),
                         ],
                         { id: 'home-nu-panel' },
                     ),
@@ -228,12 +228,7 @@ function homeContent(
                             b(
                                 'home',
                                 'snippet',
-                                b('home', 'code', {
-                                    raw: highlightCode(
-                                        t['sitemap:\n  - Home [/, index.md]\n  - About [/about, about.md]'],
-                                        'yaml',
-                                    ),
-                                }),
+                                b('home', 'code', highlightCode(t['sitemap:\n  - Home [/, index.md]\n  - About [/about, about.md]'], 'yaml')),
                             ),
                         ],
                         {},

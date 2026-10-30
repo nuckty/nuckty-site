@@ -1,13 +1,11 @@
 const messages = {
     'A static site generator with Markdown, BEMJSON templates, extensions and build artifacts for nginx and Apache.':
         'A static site generator with Markdown, BEMJSON templates, extensions and build artifacts for nginx and Apache.',
-    'nuckty demo home': 'nuckty demo home',
     'nuckty home': 'nuckty home',
     'Use cases': 'Use cases',
     'Get started': 'Get started',
     Docs: 'Docs',
     'Demo ↗': 'Demo ↗',
-    'https://nuckty.ru': 'https://nuckty.ru',
     Overview: 'Overview',
     'How to use it': 'How to use it',
     'Build output': 'Build output',

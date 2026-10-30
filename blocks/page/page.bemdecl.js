@@ -1,5 +1,6 @@
 module.exports = [
     'root',
+    'link',
     'code',
     'home',
     'article',

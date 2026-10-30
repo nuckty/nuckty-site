@@ -3,13 +3,11 @@ import type en from './en.js';
 const messages = {
     'A static site generator with Markdown, BEMJSON templates, extensions and build artifacts for nginx and Apache.':
         'Генератор статических сайтов: Markdown, шаблоны BEMJSON, расширения и готовый артефакт для nginx и Apache.',
-    'nuckty demo home': 'nuckty demo — главная',
     'nuckty home': 'nuckty — главная',
     'Use cases': 'Применение',
     'Get started': 'Руководство',
     Docs: 'Документация',
     'Demo ↗': 'Демо ↗',
-    'https://nuckty.ru': 'https://nuckty.com',
     Overview: 'Обзор',
     'How to use it': 'Как пользоваться',
     'Build output': 'Результат сборки',
