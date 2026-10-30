@@ -25,7 +25,7 @@ for (const page of pages) {
         await writeFile(path.join(destination, file), text);
         const document = searchDocument(route, text);
         search[language].push(document);
-        sitemap[language].push(`  - ${document.title.replace(/[\[\]]/g, '')} [${route}, docs/${file}]`);
+        sitemap[language].push(`  - ${document.title.replace(/[[\]]/g, '')} [${route}, docs/${file}]`);
     }
 }
 

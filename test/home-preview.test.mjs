@@ -25,5 +25,5 @@ test('preview escapes markup and accepts only a fixed document language', () => 
     assert.match(html, /&lt;script&gt;/);
     assert.match(html, /&amp;/);
     assert.match(browser.previewDocument(html, 'ru'), /<html lang="ru">/);
-    assert.match(browser.previewDocument(html, '\"><script>'), /<html lang="en">/);
+    assert.match(browser.previewDocument(html, '"><script>'), /<html lang="en">/);
 });

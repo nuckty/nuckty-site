@@ -1,0 +1,21 @@
+{
+    "categories": {
+        "correctness": "error"
+    },
+    "rules": {
+        "curly": [
+            "error",
+            "all"
+        ],
+        "no-control-regex": "off"
+    },
+    "ignorePatterns": [
+        "**/node_modules/**",
+        "**/.build/**",
+        "site/**",
+        "external/**",
+        ".cache/**",
+        ".preview/**",
+        "blocks/search/search-data.js"
+    ]
+}
