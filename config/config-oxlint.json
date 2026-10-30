@@ -15,7 +15,6 @@
         "site/**",
         "external/**",
         ".cache/**",
-        ".preview/**",
         "blocks/search/search-data.js"
     ]
 }

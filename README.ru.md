@@ -29,7 +29,7 @@ npm run serve       # http://localhost:8091
 npm run serve:en    # http://localhost:8093
 ```
 
-Для демо на порту 8092 запустите `npm run serve` в `../nuckty-demo`. Остановка — `npm run stop` и `npm run stop:en`. У английского просмотра свои PID и конфигурация nginx.
+Для демо на порту 8092 запустите `npm run serve` в `../nuckty/demo`. Остановка — `npm run stop` и `npm run stop:en`; PID и конфигурация nginx у каждого таргета свои, в `.build/serve/<target>/`.
 
 Локальные ссылки между проектами и языками заданы в `config/config-nuckty.ts`. Перед публикацией замените их выбранными публичными адресами. Канонические метаданные используют nuckty.ru/nuckty.com; сами скрипты ничего не публикуют.
 

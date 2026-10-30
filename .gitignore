@@ -11,7 +11,6 @@ content/search-data.json
 .DS_Store
 
 .cache/
-.preview/
 
 __pycache__/
 *.pyc

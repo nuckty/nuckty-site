@@ -29,7 +29,7 @@ npm run serve       # http://localhost:8091
 npm run serve:en    # http://localhost:8093
 ```
 
-Start `npm run serve` in `../nuckty-demo` for the demo on port 8092. Stop with `npm run stop` and `npm run stop:en`. English preview uses a separate nginx PID and configuration.
+Start `npm run serve` in `../nuckty/demo` for the demo on port 8092. Stop with `npm run stop` and `npm run stop:en`; each target keeps its own nginx PID and configuration in `.build/serve/<target>/`.
 
 Builds use public cross-project and language origins by default. Use `npm run build:preview` for local demo/language links. Canonical metadata uses nuckty.ru/nuckty.com; no deployment is performed by these scripts.
 
